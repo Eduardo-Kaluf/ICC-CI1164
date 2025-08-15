@@ -4,42 +4,43 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
-bool getCriterioDeParada(enum CriterioDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error) {
+#include <string.h>
+
+#include "DoubleType.h"
+
+bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error) {
     switch (criterioParada) {
         case RELATIVE_ERROR_TEST:
             *error = fabs((x_new - x_old) / x_new);
-            return *error <= EPS; // TODO TODO TODO VERIFICAR MENOR IGUAL DA MANEIRA CORRETA QUE FOI APRESENTADA EM SALA
+            return !(*error <= EPS); // TODO TODO TODO VERIFICAR MENOR IGUAL DA MANEIRA CORRETA QUE FOI APRESENTADA EM SALA
         case EPSILON_TEST:
             *error = fabs(fx);
-            return *error <= DBL_EPSILON;
+            return !(*error <= DBL_EPSILON);
         default:
-            long long int x_old_ulp = 0, x_new_ulp = 0;
+            long long int x_old_bin, x_new_bin;
+            memcpy(&x_old_bin, &x_old, sizeof(real_t));
+            memcpy(&x_new_bin, &x_new, sizeof(real_t));
 
-            for (int i=63; i>=0; i--) {
-                long long int mask = 1LL << i;
+            *error = (real_t) llabs(x_old_bin - x_new_bin) - 1;
 
-                if (x_old_ulp & mask)
-                    x_old_ulp += mask;
-                if (x_new_ulp & mask)
-                    x_new_ulp += mask;
-            }
+            if (*error < 0.0)
+                *error = 0.0;
 
-            *error = (double) llabs(x_old_ulp - x_new_ulp) - 1;
-            return *error <= ULPS;
+            return !(*error <= ULPS);
     }
 }
 
-real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioParada, int *it, real_t *raiz) {
+real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
     real_t error, x_new = x0, x_old, px, dpx;
 
     do {
         x_old = x_new;
 
-        calcPolinomio_rapido(p, x_old, &px, &dpx);
+        calcPolinomio(p, x_old, &px, &dpx, calcType);
 
         x_new = x_old - (px / dpx);
 
-        calcPolinomio_rapido(p, x_new, &px, &dpx);
+        calcPolinomio(p, x_new, &px, &dpx, calcType);
 
         (*it)++;
     } while (getCriterioDeParada(criterioParada, x_old, x_new, px, &error) && *it < MAXIT);
@@ -48,47 +49,55 @@ real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioPara
     return error;
 }
 
-real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criterioParada, int *it, real_t *raiz) {
-    real_t px1, dpx1, px2, dpx2, xm_old, xm_new = a, val, error = 0;
+real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
+    real_t px1, dpx1, px2, dpx2, xm_old, xm_new = a, val, error = ZERO;
 
     do {
         xm_old = xm_new;
-        xm_new = (a + b) / 2;
-        calcPolinomio_rapido(p, a, &px1, &dpx1);
-        calcPolinomio_rapido(p, xm_new, &px2, &dpx2);
+        xm_new = (a + b) / 2.0;
+        calcPolinomio(p, a, &px1, &dpx1, calcType);
+        calcPolinomio(p, xm_new, &px2, &dpx2, calcType);
 
         val = px1 * px2;
 
-        if (val < 0)
+        if (val < ZERO)
             b = xm_new;
-        else if (val > 0)
+        else if (val > ZERO)
             a = xm_new;
 
         (*it)++;
-    } while (getCriterioDeParada(criterioParada, xm_old, xm_new, px2, &error) && *it < MAXIT && val != 0);
+    } while (getCriterioDeParada(criterioParada, xm_old, xm_new, px2, &error) && *it < MAXIT);
 
     *raiz = xm_new;
     return error;
 }
 
-void calcPolinomio_rapido(Polinomio p, real_t x, real_t *px, real_t *dpx) {
-    real_t b = 0;
-    real_t c = 0;
+void calcPolinomio(Polinomio p, real_t x, real_t *px, real_t *dpx, enum CalcType calcType) {
 
-    for (int i = p.grau; i > 0; --i) {
-        b = b*x + p.p[i];
-        c = c*x + b;
+    if (calcType == FAST) {
+        real_t b = 0.0;
+        real_t c = 0.0;
+
+        for (int i = p.grau; i > 0; --i) {
+            b = b*x + p.p[i];
+            c = c*x + b;
+        }
+
+        b = b*x + p.p[0];
+        *px = b;
+        *dpx = c;
+
+        return;
     }
 
-    b = b*x + p.p[0];
-    *px = b;
-    *dpx = c;
-}
+    if (calcType == SLOW) {
+        *px = 0.0;
+        *dpx = 0.0;
 
-void calcPolinomio_lento(Polinomio p, real_t x, real_t *px, real_t *dpx) {
-    for (int i = p.grau; i >= 0; i --)
-        *px += p.p[i] * pow(x, i);
- 
-    for (int i = p.grau; i >= 1; i --)
-        *dpx += p.p[i] * i * pow(x, i - 1);
+        for (int i = p.grau; i >= 0; i--)
+            *px += p.p[i] * pow(x, i);
+
+        for (int i = p.grau; i >= 1; i--)
+            *dpx += p.p[i] * i * pow(x, i - 1);
+    }
 }
