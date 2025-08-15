@@ -5,9 +5,9 @@
 #include <time.h>
 
 enum CriteriosDeParada {
-    ERRO,
-    EPSILON,
-    ULP
+    RELATIVE_ERROR_TEST,
+    EPSILON_TEST,
+    ULP_TEST
 };
 
 typedef double real_t;

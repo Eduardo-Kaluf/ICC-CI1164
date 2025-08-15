@@ -7,7 +7,7 @@
 #define ZERO DBL_EPSILON
 
 // Parâmetros para teste de convergência
-#define MAXIT 500
+#define MAXIT 600
 #define EPS 1.0e-7
 #define ULPS 3
 
@@ -19,12 +19,14 @@ typedef struct {
 // Métodos
 // Retornam valor do erro quando método finalizou. Este valor depende de tipoErro
 
-real_t newtonRaphson (Polinomio p, real_t x0, int criterioParada, int *it, real_t *raiz);
-real_t bisseccao (Polinomio p, real_t a, real_t b, int criterioParada, int *it, real_t *raiz);
+real_t newtonRaphson (Polinomio p, real_t x0, enum CriteriosDeParada criterioParada, int *it, real_t *raiz);
+real_t bisseccao (Polinomio p, real_t a, real_t b, enum CriteriosDeParada criterioParada, int *it, real_t *raiz);
 
 // Cálculo de Polinômios
 void calcPolinomio_rapido(Polinomio p, real_t x, real_t *px, real_t *dpx );
 void calcPolinomio_lento(Polinomio p, real_t x, real_t *px, real_t *dpx );
+
+bool getCriterioDeParada(enum CriterioDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error)
 
 #endif // __ZEROFUNCAO_H__
 
