@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
+// TODO TODO TODO SEND PYTHON AND TESTER TOO?
 // TODO TODO TODO DOES THIS NEED TO BE ON?
 //#pragma STDC FENV_ACCESS ON
 
