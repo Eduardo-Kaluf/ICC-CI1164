@@ -5,6 +5,8 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
+// TODO TODO TODO DOES THIS NEED TO BE ON?
+//#pragma STDC FENV_ACCESS ON
 
 int main () {
     fesetround(FE_DOWNWARD);
@@ -44,7 +46,6 @@ int main () {
 
             printf("%-7s %+.15e %+.15e %3d %.8e\n", "bissec", raiz, error, it, time);
         }
-
 
         for (int j = 0; j < TESTS_QUANTITY; j++) {
             it = 0;
