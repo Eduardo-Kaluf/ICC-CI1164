@@ -40,8 +40,10 @@ real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioPara
 
         calcPolinomio(p, x_old, &px, &dpx, calcType);
 
-        if (fabs(px) <= ZERO)
+        if (fabs(px) <= ZERO) {
+            getCriterioDeParada(criterioParada, x_old, x_new, px, &error);
             break;
+        }
 
         // We could add a second derivative test here, so we less change to fall into a division by zero
         // https://www.researchgate.net/publication/358857049_A_Method_to_Avoid_the_Division-by-Zero_or_Near-Zero_in_Newton-Raphson_Method
