@@ -11,7 +11,13 @@
 bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error) {
     switch (criterioParada) {
         case RELATIVE_ERROR_TEST:
-            *error = fabs((x_new - x_old) / x_new);
+            double diff = fabs(x_new - x_old);
+
+            if (fabs(x_new) <= ZERO)
+                *error = diff;
+            else
+                *error = diff / fabs(x_new);
+
             return !(*error <= EPS);
         case EPSILON_TEST:
             *error = fabs(fx);
