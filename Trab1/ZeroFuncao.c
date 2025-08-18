@@ -4,15 +4,15 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
+#include <stdlib.h>
 #include <string.h>
 
-#include "DoubleType.h"
 
 bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error) {
     switch (criterioParada) {
         case RELATIVE_ERROR_TEST:
             *error = fabs((x_new - x_old) / x_new);
-            return !(*error <= EPS); // TODO TODO TODO VERIFICAR MENOR IGUAL DA MANEIRA CORRETA QUE FOI APRESENTADA EM SALA
+            return !(*error <= EPS);
         case EPSILON_TEST:
             *error = fabs(fx);
             return !(*error <= DBL_EPSILON);

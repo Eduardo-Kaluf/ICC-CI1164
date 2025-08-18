@@ -6,7 +6,6 @@
 #include "ZeroFuncao.h"
 
 
-
 int main () {
     fesetround(FE_DOWNWARD);
 
@@ -16,6 +15,7 @@ int main () {
     Polinomio pol;
     real_t a, b;
 
+    // Reads the polynomial data
     scanf("%d", &pol.grau);
 
     pol.p = malloc((pol.grau + 1) * sizeof(real_t));
@@ -23,13 +23,14 @@ int main () {
     for (int i=pol.grau; i >=0; --i)
         scanf("%lf", &pol.p[i]);
 
+    // Reads the interval
     scanf("%lf %lf", &a, &b);
 
     int it;
     real_t raiz, error, time;
     for (int i = 0; i < CALC_QUANTITY; i++) {
 
-        if (i == 0)
+        if (calcTypes[i] == FAST)
             printf("RAPIDO\n\n");
         else
             printf("\nLENTO\n\n");
