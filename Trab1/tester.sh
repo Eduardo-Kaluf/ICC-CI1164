@@ -1,6 +1,6 @@
 #!/bin/sh
 
-make testeFormato
+make all
 
 while true; do
     read line1 || brea

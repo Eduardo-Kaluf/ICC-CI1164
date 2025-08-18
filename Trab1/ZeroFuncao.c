@@ -37,7 +37,7 @@ bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, re
 }
 
 real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
-    real_t error = 0.0, x_new = x0, x_old, px, dpx;
+    real_t error = 0.0, x_new = x0, x_old, px, dpx, old_dpx = 1.0;
 
     do {
         (*it)++;
@@ -46,24 +46,33 @@ real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioPara
 
         calcPolinomio(p, x_old, &px, &dpx, calcType);
 
-        if (fabs(px) <= ZERO) {
-            getCriterioDeParada(criterioParada, x_old, x_new, px, &error);
-            break;
-        }
-
         // We could add a second derivative test here, so we less change to fall into a division by zero
         // https://www.researchgate.net/publication/358857049_A_Method_to_Avoid_the_Division-by-Zero_or_Near-Zero_in_Newton-Raphson_Method
-        x_new = x_old - (px / dpx);
+        if (fabs(dpx) > ZERO) {
+            old_dpx = dpx;
+            x_new = x_old - (px / dpx);
+        }
+        else
+            x_new = x_old - (px / old_dpx);
 
         calcPolinomio(p, x_new, &px, &dpx, calcType);
     } while (getCriterioDeParada(criterioParada, x_old, x_new, px, &error) && *it < MAXIT);
 
     *raiz = x_new;
+
     return error;
 }
 
 real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
     real_t px1, dpx1, px2, dpx2, xm_old, xm_new = a, val, error = 0.0;
+
+    // Testing if the "a" we chose is a root
+    calcPolinomio(p, a, &px1, &dpx1, calcType);
+    if (fabs(px1) <= ZERO) {
+        (*it)++;
+        *raiz = a;
+        return error;
+    }
 
     do {
         (*it)++;
@@ -75,14 +84,16 @@ real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criteri
 
         val = px1 * px2;
 
-        if (val < ZERO)
+        // We don't use ZERO, because what we want to see is if val is positive or negative
+        if (val < 0)
             b = xm_new;
-        else if (val > ZERO)
+        else if (val > 0)
             a = xm_new;
 
     } while (getCriterioDeParada(criterioParada, xm_old, xm_new, px2, &error) && *it < MAXIT);
 
     *raiz = xm_new;
+
     return error;
 }
 
