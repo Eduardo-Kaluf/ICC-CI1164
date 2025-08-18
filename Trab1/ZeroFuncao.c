@@ -23,7 +23,7 @@ bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, re
 
             *error = (real_t) llabs(x_old_bin - x_new_bin) - 1;
 
-            if (*error < 0.0)
+            if (*error < ZERO)
                 *error = 0.0;
 
             return !(*error <= ULPS);
@@ -34,15 +34,22 @@ real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioPara
     real_t error, x_new = x0, x_old, px, dpx;
 
     do {
+        (*it)++;
+
         x_old = x_new;
 
         calcPolinomio(p, x_old, &px, &dpx, calcType);
 
+        if (fabs(px) <= ZERO) {
+            error = 0.0;
+            break;
+        }
+
+        // We could add a second derivative test here, so we less change to fall into a division by zero
+        // https://www.researchgate.net/publication/358857049_A_Method_to_Avoid_the_Division-by-Zero_or_Near-Zero_in_Newton-Raphson_Method
         x_new = x_old - (px / dpx);
 
         calcPolinomio(p, x_new, &px, &dpx, calcType);
-
-        (*it)++;
     } while (getCriterioDeParada(criterioParada, x_old, x_new, px, &error) && *it < MAXIT);
 
     *raiz = x_new;
@@ -53,6 +60,8 @@ real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criteri
     real_t px1, dpx1, px2, dpx2, xm_old, xm_new = a, val, error = ZERO;
 
     do {
+        (*it)++;
+
         xm_old = xm_new;
         xm_new = (a + b) / 2.0;
         calcPolinomio(p, a, &px1, &dpx1, calcType);
@@ -65,7 +74,6 @@ real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criteri
         else if (val > ZERO)
             a = xm_new;
 
-        (*it)++;
     } while (getCriterioDeParada(criterioParada, xm_old, xm_new, px2, &error) && *it < MAXIT);
 
     *raiz = xm_new;
@@ -73,7 +81,6 @@ real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criteri
 }
 
 void calcPolinomio(Polinomio p, real_t x, real_t *px, real_t *dpx, enum CalcType calcType) {
-
     if (calcType == FAST) {
         real_t b = 0.0;
         real_t c = 0.0;

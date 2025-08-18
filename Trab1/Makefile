@@ -1,6 +1,6 @@
     CC     = gcc
 
-    CFLAGS = -O0
+    CFLAGS = -O0 -g
     LFLAGS = -lm
 
      VERIF = verificaEP01
@@ -24,6 +24,8 @@ $(VERIF): $(VERIF).c
 
 testeFormato: $(PROG) $(VERIF)
 	@cat teste.dat | ./$(PROG) | ./$(VERIF)
+
+all: $(PROG) $(VERIF)
 
 clean:
 	@rm -f *~ *.bak
