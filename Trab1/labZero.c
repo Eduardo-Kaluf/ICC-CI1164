@@ -1,13 +1,10 @@
-#include <fenv.h>
-#include <stdio.h>
-#include <math.h>
-
 #include "utils.h"
 #include "ZeroFuncao.h"
 
-// TODO TODO TODO SEND PYTHON AND TESTER TOO?
-// TODO TODO TODO DOES THIS NEED TO BE ON?
-//#pragma STDC FENV_ACCESS ON
+#include <fenv.h>
+#include <float.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int main () {
     fesetround(FE_DOWNWARD);
@@ -43,9 +40,7 @@ int main () {
 
             time = timestamp();
             error = bisseccao(pol, a, b, tests[j], &it, &raiz, calcTypes[i]);
-            time = timestamp() - time;
-
-            printf("%-7s %+.15e %+.15e %3d %.8e\n", "bissec", raiz, error, it, time);
+            printf("%-7s %+.15e %+.15e %3d %.8e\n", "bissec", raiz, error, it, timestamp() - time);
         }
 
         for (int j = 0; j < TESTS_QUANTITY; j++) {
@@ -53,11 +48,11 @@ int main () {
 
             time = timestamp();
             error = newtonRaphson(pol, (a + b) / 2, tests[j], &it, &raiz, calcTypes[i]);
-            time = timestamp() - time;
-
-            printf("%-7s %+.15e %+.15e %3d %.8e\n", "newton", raiz, error, it, time);
+            printf("%-7s %+.15e %+.15e %3d %.8e\n", "newton", raiz, error, it, timestamp() - time);
         }
     }
+
+    free(pol.p);
 
     return 0;
 }

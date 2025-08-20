@@ -4,11 +4,14 @@
 #include "utils.h"
 #include "ZeroFuncao.h"
 
+#include <fenv.h>
 #include <stdlib.h>
 #include <string.h>
 
 
 bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, real_t x_new, real_t fx, real_t *error) {
+    fesetround(FE_DOWNWARD);
+
     switch (criterioParada) {
         case RELATIVE_ERROR_TEST:
             double diff = fabs(x_new - x_old);
@@ -24,6 +27,7 @@ bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, re
             return !(*error <= DBL_EPSILON);
         default:
             long long int x_old_bin, x_new_bin;
+
             memcpy(&x_old_bin, &x_old, sizeof(real_t));
             memcpy(&x_new_bin, &x_new, sizeof(real_t));
 
@@ -37,6 +41,8 @@ bool getCriterioDeParada(enum CriteriosDeParada criterioParada, real_t x_old, re
 }
 
 real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
+    fesetround(FE_DOWNWARD);
+
     real_t error = 0.0, x_new = x0, x_old, px, dpx, old_dpx = 1.0;
 
     do {
@@ -64,6 +70,8 @@ real_t newtonRaphson(Polinomio p, real_t x0, enum CriteriosDeParada criterioPara
 }
 
 real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criterioParada, int *it, real_t *raiz, enum CalcType calcType) {
+    fesetround(FE_DOWNWARD);
+
     real_t px1, dpx1, px2, dpx2, xm_old, xm_new = a, val, error = 0.0;
 
     // Testing if the "a" we chose is a root
@@ -98,6 +106,8 @@ real_t bisseccao(Polinomio p, real_t a, real_t b, enum CriteriosDeParada criteri
 }
 
 void calcPolinomio(Polinomio p, real_t x, real_t *px, real_t *dpx, enum CalcType calcType) {
+    fesetround(FE_DOWNWARD);
+
     if (calcType == FAST) {
         real_t b = 0.0;
         real_t c = 0.0;
