@@ -3,6 +3,7 @@
 
 #include <float.h>
 #include "utils.h"
+#include <stdbool.h>
 
 // Aproximação aceitável como valor zero
 #define ZERO DBL_EPSILON
