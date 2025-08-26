@@ -1,6 +1,6 @@
 # PROGRAMA
     PROG = perfSL
-    OBJS = utils.o # acrescentar aqui outros módulos do programa
+    OBJS = utils.o sislin.o # acrescentar aqui outros módulos do programa
 
 # Compilador
     CC     = gcc

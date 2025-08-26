@@ -7,9 +7,9 @@
 
 // Estrutura para definiçao de um sistema linear qualquer
 typedef struct {
-  unsigned int n; // tamanho do SL
-  real_t **A; // coeficientes
-  real_t *b; // termos independentes
+    unsigned int n; // tamanho do SL
+    real_t **A; // coeficientes
+    real_t *b; // termos independentes
 } SistLinear_t;
 
 // Alocaçao e desalocação de matrizes
