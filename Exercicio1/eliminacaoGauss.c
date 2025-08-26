@@ -17,7 +17,9 @@ static int encontraMax(SistLinear_t *C, int k, int n) {
 }
 
 static void trocaLinha (SistLinear_t *C, int k, int p, int n) {
-  
+  // p -> pivo
+  // n -> tamanho do sistema
+  // k -> coluna (e linha)
 }
 
 /* Seja um S.L. de ordem 'n'
