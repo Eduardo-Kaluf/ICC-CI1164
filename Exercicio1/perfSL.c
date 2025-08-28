@@ -4,10 +4,14 @@
 
 #include "utils.h"
 #include "sislin.h"
+#include "eliminacaoGauss.h"
+
 int main() {
     SistLinear_t *input = lerSisLin();
 
-    prnSisLin(input);   
+    triangulariza(input);
+
+    prnSisLin(input);
     liberaSisLin(input);
 
     return 0;
