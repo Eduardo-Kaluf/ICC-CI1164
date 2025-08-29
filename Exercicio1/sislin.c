@@ -6,8 +6,8 @@
 #include "sislin.h"
 
 // Alocaçao de matriz em memória. 
-SistLinear_t* alocaSisLin (unsigned int n) {
-    SistLinear_t *SL = (SistLinear_t *) malloc(sizeof(SistLinear_t));
+linear_system_t* alocaSisLin (int n) {
+    linear_system_t *SL = (linear_system_t *) malloc(sizeof(linear_system_t));
 
     if ( SL ) {
 
@@ -30,7 +30,7 @@ SistLinear_t* alocaSisLin (unsigned int n) {
 }
 
 // Liberacao de memória
-void liberaSisLin (SistLinear_t *SL) {
+void liberaSisLin (linear_system_t *SL) {
     if (SL) {
         if (SL->A) {
             if (SL->A[0]) free (SL->A[0]);
@@ -41,9 +41,9 @@ void liberaSisLin (SistLinear_t *SL) {
     }
 }
 
-SistLinear_t *lerSisLin () {
-    unsigned int n;
-    SistLinear_t *SL;
+linear_system_t *lerSisLin () {
+    int n;
+    linear_system_t *SL;
     
     scanf("%d",&n);
 
@@ -63,10 +63,10 @@ SistLinear_t *lerSisLin () {
     return SL;
 }
 
-SistLinear_t *dupSisLin (SistLinear_t *src) {
+linear_system_t *dupSisLin (linear_system_t *src) {
     int n = src->n;
     
-    SistLinear_t *dest = alocaSisLin (n);
+    linear_system_t *dest = alocaSisLin (n);
 
     if (dest) {
         for(int i=0; i < n; ++i) {
@@ -79,7 +79,7 @@ SistLinear_t *dupSisLin (SistLinear_t *src) {
     return dest;
 }
 
-void prnSisLin (SistLinear_t *SL) {
+void prnSisLin (linear_system_t *SL) {
     int n=SL->n;
 
     for(int i=0; i < n; ++i) {
@@ -93,7 +93,7 @@ void prnSisLin (SistLinear_t *SL) {
     printf("\n\n");
 }
 
-void prnVetor (real_t *v, unsigned int n) {
+void prnVetor (real_t *v, int n) {
     for(int i=0; i < n; ++i)
         printf ("%.12lf ", v[i]);
     printf ("\n");
@@ -101,34 +101,35 @@ void prnVetor (real_t *v, unsigned int n) {
 
 
 // Calcula a norma máxima do erro absoluto aproximado de 2 vetores
-real_t normaMax(real_t *X1, real_t *X0, int n) {
+real_t normMax(real_t *X1, real_t *X0, int n) {
 
-    real_t k, norma = ABS(X1[0] - X0[0]);
+    real_t k, norm = ABS(X1[0] - X0[0]);
 
     for (int i=1; i < n; ++i)
-        if ((k = ABS(X1[i] - X0[i])) > norma)
-            norma = k;
+        if ((k = ABS(X1[i] - X0[i])) > norm)
+            norm = k;
 
-    return norma;
+    return norm;
 }
 
-// Calcula a norma euclidiana de um vetor
-real_t normaL2(real_t *X, int n) {
-    real_t norma = 0.0;
+// Calcula a norm euclidiana de um vetor
+real_t normL2(real_t *X, int n) {
+    real_t norm = 0.0;
 
     for (int i=0; i < n; ++i)
-        norma += X[i]*X[i];
+        norm += X[i]*X[i];
 
-    return sqrt(norma);
+    return sqrt(norm);
 }
 
 /* Calcula o resíduo R de um sistema AX = B
    Vetor *R já deve ter sido alocado previamente.
 */
-void residuo(SistLinear_t *SL, real_t *X, real_t *R, int n) {
-    for(int i=0; i < n; ++i) {
+void residuo(linear_system_t *SL, real_t *X, real_t *R, int n) {
+    for(int i = 0; i < n; ++i) {
         R[i] = SL->b[i];
         for(int j=0; j < n; ++j)
             R[i] -= SL->A[i][j]*X[j];
+        printf("%10.12lf \n", R[i]);
     }
 }

@@ -28,7 +28,7 @@ typedef double rtime_t;
 
 // Funções
 rtime_t timestamp(void);
-string_t markerName(string_t baseName, int n);
+string_t marker_name(string_t base_name, int n);
 
 #endif // __UTILS_H__
 
