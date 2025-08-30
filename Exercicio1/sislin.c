@@ -130,6 +130,5 @@ void residuo(linear_system_t *SL, real_t *X, real_t *R, int n) {
         R[i] = SL->b[i];
         for(int j=0; j < n; ++j)
             R[i] -= SL->A[i][j]*X[j];
-        printf("%10.12lf \n", R[i]);
     }
 }

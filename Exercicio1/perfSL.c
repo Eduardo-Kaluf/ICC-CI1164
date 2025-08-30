@@ -1,17 +1,22 @@
-//#include <likwid.h>
+#include <likwid.h>
 
+#include <fenv.h>
 #include <stdio.h>
+#include <bits/fenv.h>
 
 #include "utils.h"
 #include "sislin.h"
 #include "eliminacao_gauss.h"
 #include "gauss_seidel.h"
 
-void print_formated(char *name, rtime_t time, real_t *X, linear_system_t *input) {
+void print_formated(char *name, rtime_t time, real_t *X, linear_system_t *input, int total_iterations) {
     real_t *R = malloc(input->n * sizeof(real_t));
     residuo(input, X, R, input->n);
 
-    printf("%s: \n%f ms\n", name, time);
+    if (total_iterations > 0)
+        printf("%s [ %d iterações ]: \n%f ms\n", name, total_iterations, time);
+    else
+        printf("%s: \n%f ms\n", name, time);
 
     prnVetor(X, input->n);
 
@@ -24,6 +29,11 @@ void print_formated(char *name, rtime_t time, real_t *X, linear_system_t *input)
 
 
 int main() {
+
+
+
+    fesetround(FE_DOWNWARD);
+
     linear_system_t *EG_system = lerSisLin();
     real_t *EG_X = malloc(EG_system->n * sizeof(real_t));
 
@@ -32,18 +42,30 @@ int main() {
 
     // EG VERIFICATION
 
+    LIKWID_MARKER_INIT;
+    LIKWID_MARKER_START("EG-TEST");
+
     rtime_t time_EG = timestamp();
     lower_triangularization(EG_system);
     backward_substitution(EG_system, EG_X);
-    print_formated("EG", timestamp() - time_EG, EG_X, EG_system);
+    print_formated("EG", timestamp() - time_EG, EG_X, EG_system, 0);
+
+    LIKWID_MARKER_STOP("EG-TEST");
+    LIKWID_MARKER_CLOSE;
 
     // GS VERIFICATION
+
+    LIKWID_MARKER_INIT;
+    LIKWID_MARKER_START("GS-TEST");
 
     real_t norm;
     rtime_t time_GS = timestamp();
 
-    gauss_seidel(GS_system, GS_X, TOL, MAX_ITERATIONS , &norm);
-    print_formated("GS", timestamp() - time_GS, GS_X, GS_system);
+    int total_iterations = gauss_seidel(GS_system, GS_X, TOL, MAX_ITERATIONS , &norm);
+    print_formated("GS", timestamp() - time_GS, GS_X, GS_system, total_iterations);
+
+    LIKWID_MARKER_STOP("GS-TEST");
+    LIKWID_MARKER_CLOSE;
 
     liberaSisLin(EG_system);
     free(EG_X);
