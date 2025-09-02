@@ -2,7 +2,7 @@
 
 #include <fenv.h>
 #include <stdio.h>
-#include <bits/fenv.h>
+//#include <bits/fenv.h>
 
 #include "utils.h"
 #include "sislin.h"
@@ -43,20 +43,20 @@ int main() {
     // EG VERIFICATION
 
     LIKWID_MARKER_INIT;
-    LIKWID_MARKER_START("EG-TEST");
+    LIKWID_MARKER_START("EG_TEST");
 
     rtime_t time_EG = timestamp();
     lower_triangularization(EG_system);
     backward_substitution(EG_system, EG_X);
     print_formated("EG", timestamp() - time_EG, EG_X, EG_system, 0);
 
-    LIKWID_MARKER_STOP("EG-TEST");
+    LIKWID_MARKER_STOP("EG_TEST");
     LIKWID_MARKER_CLOSE;
 
     // GS VERIFICATION
 
     LIKWID_MARKER_INIT;
-    LIKWID_MARKER_START("GS-TEST");
+    LIKWID_MARKER_START("GS_TEST");
 
     real_t norm;
     rtime_t time_GS = timestamp();
@@ -64,7 +64,7 @@ int main() {
     int total_iterations = gauss_seidel(GS_system, GS_X, TOL, MAX_ITERATIONS , &norm);
     print_formated("GS", timestamp() - time_GS, GS_X, GS_system, total_iterations);
 
-    LIKWID_MARKER_STOP("GS-TEST");
+    LIKWID_MARKER_STOP("GS_TEST");
     LIKWID_MARKER_CLOSE;
 
     liberaSisLin(EG_system);
