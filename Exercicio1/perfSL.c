@@ -2,7 +2,6 @@
 
 #include <fenv.h>
 #include <stdio.h>
-//#include <bits/fenv.h>
 
 #include "utils.h"
 #include "sislin.h"
