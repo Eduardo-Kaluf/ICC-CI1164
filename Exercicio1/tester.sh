@@ -1,11 +1,9 @@
 #!/bin/bash
 
-make
+# -all 
+# -run
 
-if [ ! -f ./perfSL ]; then
-    echo "Error: Compilation failed or the executable './perfSL' was not found."
-    exit 1
-fi
+make
 
 while read -r n; do
     coefficients=()
@@ -18,10 +16,20 @@ while read -r n; do
 
     read -r newLine || break
 
-    {
-        echo "$n"
-        printf "%s\n" "${coefficients[@]}"
-    } | ./perfSL
+    case "$1" in
+    -all)
+        {
+            echo "$n"
+            printf "%s\n" "${coefficients[@]}"
+        } | likwid-perfctr -C 3 -g FLOPS_DP  -m  ./perfSL | grep -e "FP_ARITH_INST_RETIRED_SCALAR_DOUBLE" -e "DP MFLOP/s" | grep -v "AVX"
+        ;;
+    -run)
+        {
+            echo "$n"
+            printf "%s\n" "${coefficients[@]}"
+        } | ./perfSL
+        ;;
+    esac
 
 done < sistemas.dat
 
