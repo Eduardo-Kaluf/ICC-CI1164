@@ -24,9 +24,9 @@ Tridiag *genTridiag (EDo *edo) {
   for (int i=0; i < n; ++i) {
     x = edo->a + (i+1)*h;
     sl->B[i] = h*h * edo->r(x);
-    sl->Di[i] = 1 - h * edo->p(x)/2.0;
-    sl->D[i] = -2 + h*h * edo->q(x);
-    sl->Ds[i] = 1 + h * edo->p(x)/2.0;
+    sl->Di[i] = 1 - h * edo->p(x)/2.0; // DIAGONAL INFERIOR
+    sl->D[i] = -2 + h*h * edo->q(x);   // DIAGONAL PRINCIPAL
+    sl->Ds[i] = 1 + h * edo->p(x)/2.0; // DIAGONAL SUPERIOR
   }
 
   sl->B[0] -= edo->ya * (1 - h*edo->p(edo->a+h)/2.0);
@@ -35,99 +35,97 @@ Tridiag *genTridiag (EDo *edo) {
   return sl;
 }
 
-// algoritmo  Gauss-Seidel   com  vetores   das  diagonais   e  termos
-// independentes do SL
 rtime_t gaussSeidel_3Diag (Tridiag *sl, real_t *Y, unsigned int maxiter) {
-  int n = sl->n;
-  real_t *Y_old = calloc(n, sizeof(real_t));
-  for (int i = 0; i < n; ++i)
-    Y[i] = 0;
+    int n = sl->n;
+    rtime_t tTotal = timestamp();
 
-  rtime_t tTotal = timestamp();
+    for (int k = 0; k < maxiter; k++) {
+        // THE FIRST AND THE LAST ITERATION MUST BE OUTSIDE THE LOOP, BECAUSE THE FIRST THE FIRST AND LAST ONE IN THE SYSTEM ARE CONSTANTS
+        Y[0] = (sl->B[0] - sl->Ds[0] * Y[1]) / sl->D[0];
 
-  for (int it; it < maxiter; ++it) {
+        for (int i = 1; i < n - 1; ++i)
+            Y[i] = (sl->B[i] - sl->Di[i - 1] * Y[i - 1] - sl->Ds[i] * Y[i + 1]) / sl->D[i];
+            
+        Y[n - 1] = (sl->B[n - 1] - sl->Di[n - 2] * Y[n - 2] ) / sl->D[n - 1];
+    }
 
-      for (int i = 0; i < n; ++i) {
-
-          real_t sigma = 0;
-
-          for (int j = 0; j < n; ++j) {
-              if (i != j)
-                  sigma += C->A[i][j] * Y[j];
-          }
-
-          Y[i] = (C->b[i] - sigma) / C->A[i][i];
-      }
-
-      *norm = normaL2_3Diag(sl, Y);
-      if (*norm < EPSILON)
-          break;
-
-      for (int i = 0; i < n; ++i)
-          Y_old[i] = Y[i];
-  }
-
-  free(Y_old);
-
-  return timestamp() - tTotal;
+    return timestamp() - tTotal;
 }
 
 real_t normaL2_3Diag (Tridiag *sl, real_t *Y) {
-  int n = sl->n;
-  real_t normaL2;
+    int n = sl->n;
+    real_t normaL2;
 
-  normaL2 = 0.0;
+    normaL2 = 0.0;
 
-  // algoritmo para calcular Norma L2 com  vetores   das  diagonais   e  termos
-  // independentes do SL
-  
-  return normaL2;
-  
+    // algoritmo para calcular Norma L2 com  vetores   das  diagonais   e  termos
+    // independentes do SL
+
+    return normaL2;
 }
 
 rtime_t gaussSeidel_EDO (EDo *edoeq, real_t *Y, unsigned int maxiter) {
-  int n = edoeq->n;
-  real_t x, b, yi, d, di, ds, h;
+    int n = edoeq->n;
+    real_t h, xi, bi, yi, d, di, ds;
 
-  rtime_t tTotal = timestamp();
+    rtime_t tTotal = timestamp();
 
-  
-  h = (edoeq->b - edoeq->a) / (n+1);
+    h = (edoeq->b - edoeq->a) / (n + 1);
 
-  for (int k=0; k < maxiter; ++k) {
+    for (int k = 0; k < maxiter; ++k) { // 23 FLOP por iteração do método
+        for (int i = 0; i < n; ++i) { // Para cada equação do SL
+            xi = edoeq->a + (i + 1) * h; // valor xi da malha: 2 FLOP
+            bi = h * h * edoeq->r(xi); // termo independente: 3 FLOP
+            di = 1 - h * edoeq->p(xi)/2.0; // diagonal inferior: 3 FLOP
+            d = -2 + h * h * edoeq->q(xi); // diagonal principal: 3 FLOP
+            ds = 1 + h * edoeq->p(xi)/2.0; // diagonal superior: 3 FLOP
+            
+            // 8 FLOP (maximo) ; 4 FLOP (mínimo)
+            
+            if (i == 0)
+                bi -= ds * Y[i + 1] + edoeq->ya * (1 - h*edoeq->p(edoeq->a+h) / 2.0);
+            else if (i == n - 1)
+                bi -= di * Y[i - 1] + edoeq->yb * (1 + h*edoeq->p(edoeq->b-h) / 2.0);
+            else 
+                bi -= ds*Y[i + 1] + di*Y[i - 1] ;
+            
+            Y[i] = bi / d; // Calcula incógnita: 1 FLOP
+        }
+    }
 
-    // algoritmo Gauss-Seidel usando parâmetros EDO, sem usar vetores para
-    // diagonais e termos independentes do SL
-
-  }
-
-  return timestamp() - tTotal;
+    return timestamp() - tTotal;
 }
 
 real_t normaL2_EDO (EDo *edoeq, real_t *Y) {
-  int n=edoeq->n, i;
-  real_t normaL2, res, x, b, d, di, ds, h;
+    int n=edoeq->n, i;
+    real_t normaL2, res, x, b, d, di, ds, h;
 
-  normaL2 = 0.0;
+    normaL2 = 0.0;
 
-  h = (edoeq->b-edoeq->a)/(n+1);
+    h = (edoeq->b-edoeq->a)/(n+1);
 
-  // algoritmo para calcular Norma L2 usando parâmetros EDO, sem usar vetores para
-  // diagonais e termos independentes do SL  
+    // TODO TODO TODO REVISAR AQUI
+    for (int i=0; i < n; ++i)
+        normaL2 += Y[i]*Y[i];
 
-  return normaL2;
+    normaL2 = sqrt(normaL2);
+
+    // algoritmo para calcular Norma L2 usando parâmetros EDO, sem usar vetores para
+    // diagonais e termos independentes do SL  
+
+    return normaL2;
 }
 
 // Exibe um vetor na saída padrão
 void prnVetor (real_t *v, unsigned int n)
 {
-  int i;
+    int i;
 
-  //  printf ("\n");
-  printf ("   ");
-  for(i=0; i < n; ++i)
-      printf ("%20.12e", v[i]);
-  printf ("\n");
+    //  printf ("\n");
+    printf ("   ");
+    for(i=0; i < n; ++i)
+        printf ("%20.12e", v[i]);
+    printf ("\n");
 
 }
 
@@ -141,39 +139,39 @@ void prnTriDiagonal(Tridiag *sl) {
 
 // Exibe SL na saída padrão
 void prnEDOsl (EDo *edoeq, int diagOnly) {
-  int n = edoeq->n, i, j;
-  real_t x, b, d, di, ds;
-  real_t h = (edoeq->b - edoeq->a)/(n+1);
+    int n = edoeq->n, i, j;
+    real_t x, b, d, di, ds;
+    real_t h = (edoeq->b - edoeq->a)/(n+1);
 
-  printf ("\tn = %d, \t H = %.8g\nSL:\n", n, h);
-  if (diagOnly) {
-    prnTriDiagonal(genTridiag(edoeq));
-  }
-  else {
-    for (i=0; i < n; ++i) {
-      x = edoeq->a + (i+1)*h;
-      b = h*h * edoeq->r(x);      
-      di = 1 - h * edoeq->p(x)/2.0;
-      d = -2 + h*h * edoeq->q(x);
-      ds = 1 + h * edoeq->p(x)/2.0;
-      
-      for (j=0; j < n; ++j) {
-	if (i == j)
-	  printf ("%20.12e",d);
-	else if (j == i-1 && i)
-	  printf ("%20.12e",di);
-	else if (j == i+1 && i != n-1)
-	  printf ("%20.12e",ds);
-	else
-	  printf("%20.12e", 0.0);
-      }
-      
-      if (i == 0)
-	b -= edoeq->ya * (1 - h*edoeq->p(edoeq->a+h)/2.0);
-      else if (i == n-1)
-	b -= edoeq->yb * (1 + h*edoeq->p(edoeq->b-h)/2.0);
-      
-      printf (" | %20.12e\n", b);
+    printf ("\tn = %d, \t H = %.8g\nSL:\n", n, h);
+    if (diagOnly) {
+        prnTriDiagonal(genTridiag(edoeq));
     }
-  }
+    else {
+        for (i=0; i < n; ++i) {
+            x = edoeq->a + (i+1)*h;
+            b = h*h * edoeq->r(x);      
+            di = 1 - h * edoeq->p(x)/2.0;
+            d = -2 + h*h * edoeq->q(x);
+            ds = 1 + h * edoeq->p(x)/2.0;
+            
+            for (j=0; j < n; ++j) {
+                if (i == j)
+                    printf ("%20.12e",d);
+                else if (j == i-1 && i)
+                    printf ("%20.12e",di);
+                else if (j == i+1 && i != n-1)
+                    printf ("%20.12e",ds);
+                else
+                    printf("%20.12e", 0.0);
+            }
+            
+            if (i == 0)
+                b -= edoeq->ya * (1 - h*edoeq->p(edoeq->a+h)/2.0);
+            else if (i == n-1)
+                b -= edoeq->yb * (1 + h*edoeq->p(edoeq->b-h)/2.0);
+            
+            printf (" | %20.12e\n", b);
+        }
+    }
 }

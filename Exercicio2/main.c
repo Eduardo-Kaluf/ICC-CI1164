@@ -12,15 +12,26 @@ real_t rr (real_t x);
 
 int main () {
 
-  EDo edo = {5, 0, 1, -1, 0, pp, qq, rr}; // definição da EDO do exercício
-  real_t *Y; // Resultado da EDO.
+  EDo edo = {5, 0, 1, -1, 0, pp, qq, rr};
 
-  genTridiag(&edo);
+  real_t *Y = calloc(edo.n, sizeof(real_t));
 
+  Tridiag *tridiag = genTridiag(&edo);
+  gaussSeidel_3Diag(tridiag, Y, MAXIT);
   prnEDOsl(&edo, 0);
+  prnVetor(Y, edo.n);
+
+  for (int i = 0; i < edo.n; i++)
+    Y[i] = 0;
+
+  gaussSeidel_EDO(&edo, Y, MAXIT);
+  prnVetor(Y, edo.n);
+
   // aplica gauss-seidel para malhas 5, 10, 100 e 1000
   // Mostra resultados
-  
+
+  free(Y);
+
   return 0;
 }
 
