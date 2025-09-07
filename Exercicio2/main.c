@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <float.h>
 
 #include "utils.h"
 #include "gauss_seidel_edo.h"
@@ -10,27 +9,49 @@ real_t pp (real_t x);
 real_t qq (real_t x);
 real_t rr (real_t x);
 
+#define MALHA_SIZE 4
+
 int main () {
+  real_t *Y;
+  Tridiag *tridiag;
+
+  int malha[MALHA_SIZE] = {5, 10, 100, 1000};
 
   EDo edo = {5, 0, 1, -1, 0, pp, qq, rr};
+   prnEDOsl(&edo, 0);
 
-  real_t *Y = calloc(edo.n, sizeof(real_t));
+  for (int i = 0; i < 4; i++) {
+    edo.n = malha[i];
+    tridiag = genTridiag(&edo);
+    Y = calloc(edo.n, sizeof(real_t));
 
-  Tridiag *tridiag = genTridiag(&edo);
-  gaussSeidel_3Diag(tridiag, Y, MAXIT);
-  prnEDOsl(&edo, 0);
-  prnVetor(Y, edo.n);
+    // UNCOMMENT THIS LINE TO SHOW THE SYSTEM
 
-  for (int i = 0; i < edo.n; i++)
-    Y[i] = 0;
+    gaussSeidel_3Diag(tridiag, Y, MAXIT);
+    prnVetor(Y, edo.n);
+    printf("NORMA: %.10f\n", normaL2_3Diag(tridiag, Y, (edo.b - edo.a) / (edo.n + 1)));
 
-  gaussSeidel_EDO(&edo, Y, MAXIT);
-  prnVetor(Y, edo.n);
+    for (int j = 0; j < edo.n; j++)
+      Y[j] = 0;
 
-  // aplica gauss-seidel para malhas 5, 10, 100 e 1000
-  // Mostra resultados
+    gaussSeidel_EDO(&edo, Y, MAXIT);
+    prnVetor(Y, edo.n);
+    printf("NORMA: %.10f\n", normaL2_EDO(&edo, Y));
 
-  free(Y);
+    for (int j = 0; j < edo.n; j++)
+      Y[j] = 0;
+
+    if (tridiag != NULL) {
+      free(tridiag->D);
+      free(tridiag->Ds);
+      free(tridiag->Di);
+      free(tridiag->B);
+      free(tridiag);
+    }
+
+    if (Y != NULL)
+      free(Y);
+  }
 
   return 0;
 }
