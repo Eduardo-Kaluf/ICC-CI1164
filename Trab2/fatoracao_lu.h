@@ -1,0 +1,6 @@
+// EDUARDO KALUF - GRR 20241770
+
+#ifndef FATORACAO_LU_H
+#define FATORACAO_LU_H
+
+#endif //FATORACAO_LU_H
