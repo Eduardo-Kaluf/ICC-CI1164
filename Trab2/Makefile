@@ -1,39 +1,43 @@
-# AFTER COMPILING RUN WITH "likwid-perfctr -C 3 -g FLOPS_DP  -m ./perfSL < test.dat > test.log"
-
 # PROGRAMA
     PROG = resolveEDO
-    OBJS = $(PROG).o edo.o utils.o fatoracao_lu.o # mod1.o mod2.o
-     VERIF = verificaEP02
+    PROG_LIKWID = $(PROG)-likwid
+    OBJS = $(PROG).o edo.o utils.o fatoracao_lu.o
+    VERIF = verificaEP02
 
 # Compilador
     CC     = gcc
 
-# Acrescentar onde apropriado as opções para incluir uso da biblioteca LIKWID
+# Flags Padrão
     CFLAGS = -O0 -g
     LFLAGS = -lm
 
 # LIKWID FLAGS
-    CFLAGS-LIKWID = -O0 -LIKWID -g -DLIKWID_PERFMON -I${LIKWID_INCLUDE}
+    CFLAGS-LIKWID = -O0 -g -DLIKWID -DLIKWID_PERFMON -I${LIKWID_INCLUDE}
     LFLAGS-LIKWID = -lm -L${LIKWID_LIB} -llikwid
 
-# Lista de arquivos para distribuição. Acrescentar mais arquivos se necessário.
+# Lista de arquivos para distribuição
 DISTFILES = *.c *.h LEIAME* Makefile *.dat
 DISTDIR = ${USER}
 
-.PHONY: clean purge dist all
+.PHONY: clean purge dist all lik-all
 
 all: $(PROG) $(VERIF)
 
-lik-all: $(PROG-LIKWID) $(VERIF)
+lik-all: $(PROG_LIKWID) $(VERIF)
 
-%.o: %.c %.h utils.h
+%.o: %.c *.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
 
-$(PROG-LIKWID): $(OBJS)
-	$(CC) $(CFLAGS-LIKWID) -o $@ $^ $(LFLAGS-LIKWID)
+
+$(PROG_LIKWID): CFLAGS = $(CFLAGS-LIKWID)
+$(PROG_LIKWID): LFLAGS = $(LFLAGS-LIKWID)
+
+$(PROG_LIKWID): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+
 
 $(VERIF): $(VERIF).c
 	$(CC) -Wno-format -o $@ $<
@@ -43,12 +47,12 @@ testeFormato: $(PROG) $(VERIF)
 
 clean:
 	@echo "Limpando sujeira ..."
-	@rm -f *~ *.bak
+	@rm -f *~ *.bak *.o
 
 purge:  clean
 	@echo "Limpando tudo ..."
-	@rm -f core a.out $(OBJS)
-	@rm -f $(PROG) $(VERIF) $(DISTDIR) $(DISTDIR).tgz
+	@rm -f core a.out
+	@rm -f $(PROG) $(PROG_LIKWID) $(VERIF) $(DISTDIR) $(DISTDIR).tgz
 
 dist: purge
 	@echo "Gerando arquivo de distribuição ($(DISTDIR).tgz) ..."
