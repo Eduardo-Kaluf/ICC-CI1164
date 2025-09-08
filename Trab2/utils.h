@@ -33,5 +33,7 @@ typedef long long int lint_t;
 rtime_t timestamp(void);
 string_t markerName(string_t baseName, int n);
 
+void print_array(real_t *v, int n);
+
 #endif // __UTILS_H__
 

@@ -40,3 +40,11 @@ string_t markerName(string_t baseName, int n)
 
 }
 
+void print_array(real_t *v, int n) {
+    printf("[ ");
+    for (int i = 0; i < n; i++)
+        printf("%.22f ", v[i]);
+    printf("]\n");
+}
+
+
