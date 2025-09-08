@@ -6,6 +6,8 @@
 
 #include "utils.h"
 
+#include "edo.h"
+
 /*  Retorna tempo em milisegundos desde EPOCH
 
     Forma de uso:
@@ -43,8 +45,14 @@ string_t markerName(string_t baseName, int n)
 void print_array(real_t *v, int n) {
     printf("[ ");
     for (int i = 0; i < n; i++)
-        printf("%.22f ", v[i]);
+        printf(FORMAT, v[i]);
     printf("]\n");
+}
+
+void print_vector(real_t *v, int n) {
+    for (int i = 0; i < n; i++)
+        printf(FORMAT, v[i]);
+    printf("\n");
 }
 
 

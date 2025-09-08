@@ -1,7 +1,13 @@
 // EDUARDO KALUF - GRR 20241770
+
+#ifdef LIKWID
+	#include <likwid.h>
+#endif
+
 #include <fenv.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 
 #include "edo.h"
 #include "fatoracao_lu.h"
@@ -22,6 +28,21 @@ EDo* read_edo() {
 	scanf("%lf %lf %lf %lf", &edo->r1, &edo->r2, &edo->r3, &edo->r4);
 
 	return edo;
+}
+
+void free_tridiag(Tridiag *tridiag) {
+	if (tridiag != NULL) {
+		if (tridiag->D != NULL)
+			free(tridiag->D);
+		if (tridiag->Ds != NULL)
+			free(tridiag->Ds);
+		if (tridiag->Di != NULL)
+			free(tridiag->Di);
+		if (tridiag->B != NULL)
+			free(tridiag->B);
+
+		free(tridiag);
+	}
 }
 
 void printMatrix(int rows, int cols, double matrix[rows][cols]) {
@@ -75,37 +96,39 @@ void printTridiagMatrix(const Tridiag *A) {
 
 int main() {
 	fesetround(FE_DOWNWARD);
-	double matrix[5][5] = {
-		{-1.725844322818500e+00, 1.0e+00, 0.0e+00, 0.0e+00, 0.0e+00},
-		{ 1.0e+00, -1.725844322818500e+00, 1.0e+00, 0.0e+00, 0.0e+00},
-		{ 0.0e+00,  1.0e+00, -1.725844322818500e+00, 1.0e+00, 0.0e+00},
-		{ 0.0e+00,  0.0e+00,  1.0e+00, -1.725844322818500e+00, 1.0e+00},
-		{ 0.0e+00,  0.0e+00,  0.0e+00,  1.0e+00, -1.725844322818500e+00}
-	};
-	double X[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-	double B[5] = {-2.0, 0.0, 0.0, 0.0, 2.0};
 
-	double Z[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
-
-	EDo *edo = read_edo(); //prnEDOsl(edo);
+	EDo *edo = read_edo();
 	Tridiag *tridiag = genTridiag(edo);
 
-	fatoracaoLuTridiag(tridiag, tridiag->n);
-	printTridiagMatrix(tridiag);
+	const int n = tridiag->n;
+	real_t *X = malloc(sizeof(real_t) * n);
 
-	resolveSlTridiag(tridiag, Z);
-	print_array(Z, 5);
+	rtime_t tempo = timestamp();
 
-	// __________ //
+	#ifdef LIKWID
+		LIKWID_MARKER_INIT;
+		LIKWID_MARKER_START("EDO_TEST");
+	#endif
 
-	fatoracaoLU(5, matrix);
-	printMatrix(5, 5, matrix);
+	fatoracaoLuTridiag(tridiag, n);
+	resolveSlTridiag(tridiag, X);
 
-	resolveSL(5, matrix, B, X);
-	print_array(X, 5);
+	#ifdef LIKWID
+		LIKWID_MARKER_STOP("EDO_TEST");
+		LIKWID_MARKER_CLOSE;
+	#endif
 
-	printf("\n FIM \n");
-	free(edo);
+	tempo = timestamp() - tempo;
+
+	prnEDOsl(edo);
+	printf("\n");
+	print_vector(X, n);
+	printf(FORMAT, tempo);
+	printf("\n");
+
+	// free_tridiag(tridiag);
+	// free(edo);
+	// free(X);
 
     return 0;
 }
