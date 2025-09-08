@@ -24,7 +24,7 @@ while read -r n; do
 
             echo "$n"
             printf "%s\n" "${coefficients[@]}"
-        } | likwid-perfctr -C 3 -g FLOPS_DP -m ./resolveEDO | grep -e "FP_ARITH_INST_RETIRED_SCALAR_DOUBLE" -e "DP MFLOP/s" | grep -v "AVX"
+        } | likwid-perfctr -C 3 -g FLOPS_DP -m ./resolveEDO-likwid | grep -e "FP_ARITH_INST_RETIRED_SCALAR_DOUBLE" -e "DP MFLOP/s" | grep -v "AVX"
         ;;
     -all)
         {
