@@ -1,5 +1,7 @@
 // EDUARDO KALUF - GRR 20241770
 
+// Foi implementado fatoração LU porém estava errado no enunciado.
+
 #include <stdlib.h>
 
 #include "fatoracao_lu.h"

@@ -9,20 +9,12 @@
 #include <stdlib.h>
 
 #include "edo.h"
-#include "fatoracao_lu.h"
 #include "utils.h"
+#include "gauss_seidel.h"
 
-// TODO TODO TODO
-// SEE IF IT NEEDS TO READ MORE LINES
-// EXAMPLE ON THE TEST.DAT IT INPUTS 0 0 0 0 and then 0 0 1 0
-
+// TODO TODO TODO ADD OPTION TO READ MORE LINES
 int main() {
 	fesetround(FE_DOWNWARD);
-
-	#ifdef TESTE
-		printf("\n\nTESTE\n\n");
-	#endif
-
 
 	EDo *edo = read_edo();
 	Tridiag *tridiag = genTridiag(edo);
@@ -31,13 +23,13 @@ int main() {
 	real_t *X = malloc(sizeof(real_t) * n);
 
 	rtime_t tempo = timestamp();
+
 	#ifdef TESTE
 		LIKWID_MARKER_INIT;
 		LIKWID_MARKER_START("EDO_TEST");
 	#endif
 
-	fatoracaoLu(tridiag, n);
-	resolveSl(tridiag, X);
+	gaussSeidel_3Diag(tridiag, X, MAX_ITER);
 
 	#ifdef TESTE
 		LIKWID_MARKER_STOP("EDO_TEST");

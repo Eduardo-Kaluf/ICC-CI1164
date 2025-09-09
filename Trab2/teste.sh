@@ -20,9 +20,11 @@ make purge
 
 # _____________ #
 
+echo ""
+
 make lik-all &> "$VOID_FILE"
 
-likwid-perfctr -C 3 -g FLOPS_DP -m ./resolveEDO-likwid < "$TEMP_INPUT_FILE"| grep -e "FP_ARITH_INST_RETIRED_SCALAR_DOUBLE"
+likwid-perfctr -O -C 3 -g FLOPS_DP -m ./resolveEDO-likwid < "$TEMP_INPUT_FILE"| grep -e "FP_ARITH_INST_RETIRED_SCALAR_DOUBLE" | sed 's/,PMC1//g'
 
 make purge
 

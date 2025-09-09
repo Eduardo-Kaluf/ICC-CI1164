@@ -2,9 +2,9 @@
 
 # PROGRAMA
     PROG = resolveEDO
-    OBJS = $(PROG).o edo.o utils.o fatoracao_lu.o
+    OBJS = $(PROG).o edo.o utils.o gauss_seidel.o
     PROG-likwid = resolveEDO-likwid
-    OBJS-likwid = $(PROG-likwid).o edo.o utils.o fatoracao_lu.o
+    OBJS-likwid = $(PROG-likwid).o edo.o utils.o gauss_seidel.o
     VERIF = verificaEP02
 
 # Compilador
