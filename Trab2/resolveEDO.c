@@ -20,7 +20,7 @@ int main() {
 	fesetround(FE_DOWNWARD);
 
 	#ifdef TESTE
-		printf("TESTE");
+		printf("\n\nTESTE\n\n");
 	#endif
 
 
@@ -32,8 +32,6 @@ int main() {
 
 	rtime_t tempo = timestamp();
 	#ifdef TESTE
-		printf("\n\n\n\nTESTE");
-
 		LIKWID_MARKER_INIT;
 		LIKWID_MARKER_START("EDO_TEST");
 	#endif
@@ -41,6 +39,10 @@ int main() {
 	fatoracaoLuTridiag(tridiag, n);
 	resolveSlTridiag(tridiag, X);
 
+	#ifdef TESTE
+		LIKWID_MARKER_STOP("EDO_TEST");
+		LIKWID_MARKER_CLOSE;
+	#endif
 
 	tempo = timestamp() - tempo;
 
