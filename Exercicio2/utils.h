@@ -54,4 +54,8 @@ typedef struct {
  real_t (* p)(real_t), (* q)(real_t), (* r)(real_t);
 } EDo;
 
+void print_array(real_t *v, int n);
+
+void zera_array(real_t *v, int n);
+
 #endif // __UTILS_H__

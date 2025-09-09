@@ -34,3 +34,15 @@ string_t markerName(string_t baseName, int n) {
 
     return mark;
 }
+
+void print_array(real_t *v, int n) {
+    printf("[ ");
+    for (int i = 0; i < n; i++)
+        printf("%25.15f ", v[i]);
+    printf(" ]\n");
+}
+
+void zera_array(real_t *v, int n) {
+    for (int i = 0; i < n; i++)
+        v[i] = 0;
+}
