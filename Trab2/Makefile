@@ -49,11 +49,9 @@ testeFormato: $(PROG) $(VERIF)
 	@cat teste.dat | ./$(PROG) | ./$(VERIF)
 
 clean:
-	@echo "Limpando sujeira ..."
 	@rm -f *~ *.bak *.o
 
 purge:  clean
-	@echo "Limpando tudo ..."
 	@rm -f core a.out
 	@rm -f $(PROG) $(PROG-likwid) $(VERIF) $(DISTDIR) $(DISTDIR).tgz
 
