@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# EDUARDO KALUF - GRR 20241770
 
 TEMP_INPUT_FILE=$(mktemp)
 VOID_FILE="VOID_FILE"

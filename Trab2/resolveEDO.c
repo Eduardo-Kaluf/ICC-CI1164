@@ -36,8 +36,8 @@ int main() {
 		LIKWID_MARKER_START("EDO_TEST");
 	#endif
 
-	fatoracaoLuTridiag(tridiag, n);
-	resolveSlTridiag(tridiag, X);
+	fatoracaoLu(tridiag, n);
+	resolveSl(tridiag, X);
 
 	#ifdef TESTE
 		LIKWID_MARKER_STOP("EDO_TEST");

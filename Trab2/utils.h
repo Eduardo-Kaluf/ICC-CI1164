@@ -29,11 +29,29 @@ typedef long long int lint_t;
 // 'n' DEVE ser positivo e não-nulo
 #define isPot2(n) (!(n & (n - 1)))     // #define isPot2(n) (n && !(n & (n - 1)))
 
-// Funções
+/**
+ * @brief Retorna tempo em milisegundos desde EPOCH.
+ *
+ * @return Tempo em milisegundos
+ */
 rtime_t timestamp(void);
+
+/**
+ * @brief Retornar um marcador no formato aceito pelo LIKWID.
+ *
+ * @param baseName Nome do marcador (EX: ABC).
+ * @param n Número para segunda parte do marcador (EX: 10).
+ *
+ * @return String no formato de marcador (EX: ABC_10)
+ */
 string_t markerName(string_t baseName, int n);
 
-void print_array(real_t *v, int n);
+/**
+ * @brief Imprime um vetor na tela.
+ *
+ * @param v Vetor a ser impresso.
+ * @param n Tamanho do vetor.
+ */
 void print_vector(real_t *v, int n);
 
 #endif // __UTILS_H__

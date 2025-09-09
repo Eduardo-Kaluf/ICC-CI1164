@@ -1,3 +1,5 @@
+# EDUARDO KALUF - GRR 20241770
+
 # PROGRAMA
     PROG = resolveEDO
     OBJS = $(PROG).o edo.o utils.o fatoracao_lu.o

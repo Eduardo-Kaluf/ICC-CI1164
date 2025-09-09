@@ -7,7 +7,6 @@
 #include "utils.h"
 #include "edo.h"
 
-
 EDo* read_edo() {
     EDo *edo = malloc(sizeof(EDo));
     if (edo == NULL)
@@ -53,7 +52,6 @@ Tridiag *genTridiag (EDo *edo) {
     return sl;
 }
 
-// Exibe SL na saída padrão
 void prnEDOsl (EDo *edoeq) {
     int n = edoeq->n, i, j;
     real_t x, b, d, di, ds,rx;
