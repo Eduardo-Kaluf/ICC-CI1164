@@ -11,7 +11,7 @@
 EDo* read_edo() {
     EDo *edo = malloc(sizeof(EDo));
     if (edo == NULL)
-        return nullptr;
+        return NULL;
 
     scanf("%d", &edo->n);
     scanf("%lf %lf", &edo->a, &edo->b);

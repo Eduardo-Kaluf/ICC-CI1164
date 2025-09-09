@@ -1,6 +1,9 @@
 // EDUARDO KALUF - GRR 20241770
 
-#include <likwid.h>
+#ifdef TESTE
+	#include <likwid.h>
+#endif
+
 #include <fenv.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +19,11 @@
 int main() {
 	fesetround(FE_DOWNWARD);
 
+	#ifdef TESTE
+		printf("TESTE");
+	#endif
+
+
 	EDo *edo = read_edo();
 	Tridiag *tridiag = genTridiag(edo);
 
@@ -23,15 +31,16 @@ int main() {
 	real_t *X = malloc(sizeof(real_t) * n);
 
 	rtime_t tempo = timestamp();
+	#ifdef TESTE
+		printf("\n\n\n\nTESTE");
 
-	LIKWID_MARKER_INIT;
-	LIKWID_MARKER_START("EDO_TEST");
+		LIKWID_MARKER_INIT;
+		LIKWID_MARKER_START("EDO_TEST");
+	#endif
 
 	fatoracaoLuTridiag(tridiag, n);
 	resolveSlTridiag(tridiag, X);
 
-	LIKWID_MARKER_STOP("EDO_TEST");
-	LIKWID_MARKER_CLOSE;
 
 	tempo = timestamp() - tempo;
 
