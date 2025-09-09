@@ -24,8 +24,13 @@ typedef struct {
 
 // Funções auxiliares
 
-Tridiag *genTridiag (EDo *edoeq);
+EDo* read_edo();
+
 void prnEDOsl (EDo *edoeq);
+
+Tridiag *genTridiag (EDo *edoeq);
+
+void free_tridiag(Tridiag *tridiag);
 
 #endif // __EQDIFF_H__
 

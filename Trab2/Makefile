@@ -1,7 +1,8 @@
 # PROGRAMA
     PROG = resolveEDO
-    PROG_LIKWID = $(PROG)-likwid
     OBJS = $(PROG).o edo.o utils.o fatoracao_lu.o
+    PROG-likwid = resolveEDO-likwid
+    OBJS-likwid = $(PROG-likwid).o edo.o utils.o fatoracao_lu.o
     VERIF = verificaEP02
 
 # Compilador
@@ -11,9 +12,9 @@
     CFLAGS = -O0 -g
     LFLAGS = -lm
 
-# LIKWID FLAGS
-    CFLAGS-LIKWID = -O0 -g -DLIKWID -DLIKWID_PERFMON -I${LIKWID_INCLUDE}
-    LFLAGS-LIKWID = -lm -L${LIKWID_LIB} -llikwid
+# Flags LIKWID
+    CFLAGS-likwid = -O0 -g -DLIKWID_PERFMON -I${LIKWID_INCLUDE}
+    LFLAGS-likwid = -lm -L${LIKWID_LIB} -llikwid
 
 # Lista de arquivos para distribuição
 DISTFILES = *.c *.h LEIAME* Makefile *.dat
@@ -23,24 +24,26 @@ DISTDIR = ${USER}
 
 all: $(PROG) $(VERIF)
 
-lik-all: $(PROG_LIKWID) $(VERIF)
-
-%.o: %.c *.h
-	$(CC) -c $(CFLAGS) -o $@ $<
-
 $(PROG): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+	$(CC) -o $@ $^ $(LFLAGS)
 
+lik-all: $(PROG-likwid) $(VERIF)
 
-$(PROG_LIKWID): CFLAGS = $(CFLAGS-LIKWID)
-$(PROG_LIKWID): LFLAGS = $(LFLAGS-LIKWID)
+$(PROG-likwid): $(OBJS-likwid)
+	$(CC) -o $@ $^ $(LFLAGS-likwid)
 
-$(PROG_LIKWID): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+# ----------------------------------- #
 
+$(PROG-likwid).o: $(PROG).c
+	$(CC) $(CFLAGS-likwid) -c $< -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(VERIF): $(VERIF).c
 	$(CC) -Wno-format -o $@ $<
+
+# ----------------------------------- #
 
 testeFormato: $(PROG) $(VERIF)
 	@cat teste.dat | ./$(PROG) | ./$(VERIF)
