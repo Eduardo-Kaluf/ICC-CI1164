@@ -3,9 +3,9 @@
 #ifndef __EQDIFF_H__
 #define __EQDIFF_H__
 
-typedef double real_t;
-
 #define FORMAT "%23.15e"
+
+#include "utils.h"
 
 // Sistema linear Tri-diagonal
 typedef struct {

@@ -27,8 +27,13 @@ string_t markerName(string_t baseName, int n)
 
 }
 
-void print_vector(real_t *v, int n) {
+void print_vetor(real_t *v, int n) {
     for (int i = 0; i < n; i++)
         printf(FORMAT, v[i]);
     printf("\n");
+}
+
+void zera_vetor(real_t *v, int n) {
+    for (int i = 0; i < n; i++)
+        v[i] = 0.0;
 }

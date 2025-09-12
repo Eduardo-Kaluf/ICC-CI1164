@@ -9,6 +9,7 @@
 
 EDo* read_edo() {
     EDo *edo = malloc(sizeof(EDo));
+
     if (edo == NULL)
         return NULL;
 
@@ -88,6 +89,8 @@ void prnEDOsl (EDo *edoeq) {
 
         printf ("\n");
     }
+
+    printf ("\n");
 }
 
 void free_tridiag(Tridiag *tridiag) {

@@ -54,7 +54,15 @@ string_t markerName(string_t baseName, int n);
  * @param v Vetor a ser impresso.
  * @param n Tamanho do vetor.
  */
-void print_vector(real_t *v, int n);
+void print_vetor(real_t *v, int n);
+
+/**
+ * @brief Zera o vetor passado.
+ *
+ * @param v Vetor a ser impresso.
+ * @param n Tamanho do vetor.
+ */
+void zera_vetor(real_t *v, int n);
 
 #endif // __UTILS_H__
 

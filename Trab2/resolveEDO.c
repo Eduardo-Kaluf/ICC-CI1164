@@ -12,41 +12,53 @@
 #include "utils.h"
 #include "gauss_seidel.h"
 
-// TODO TODO TODO ADD OPTION TO READ MORE LINES
 int main() {
 	fesetround(FE_DOWNWARD);
 
 	EDo *edo = read_edo();
-	Tridiag *tridiag = genTridiag(edo);
 
-	const int n = tridiag->n;
-	real_t *X = malloc(sizeof(real_t) * n);
+	const int n = edo->n;
 
-	rtime_t tempo = timestamp();
+	// Vetor solução
+	real_t *Y = malloc(sizeof(real_t) * edo->n);
 
-	#ifdef TESTE
-		LIKWID_MARKER_INIT;
-		LIKWID_MARKER_START("EDO_TEST");
-	#endif
+	int it;
+	real_t norma;
 
-	gaussSeidel_3Diag(tridiag, X, MAX_ITER);
+	do {
+		// Geramos uma tridiagonal nova para cada nova leitura de coeficientes (r1, r2, r3, r4)
+		Tridiag *tridiag = genTridiag(edo);
 
-	#ifdef TESTE
-		LIKWID_MARKER_STOP("EDO_TEST");
-		LIKWID_MARKER_CLOSE;
-	#endif
+		rtime_t tempo = timestamp();
 
-	tempo = timestamp() - tempo;
+		#ifdef LIKWID_TEST
+			LIKWID_MARKER_INIT;
+			LIKWID_MARKER_START("EDO_TEST");
+		#endif
 
-	prnEDOsl(edo);
-	printf("\n");
-	print_vector(X, n);
-	printf("%16.8e", tempo);
-	printf("\n");
+		it = gaussSeidel_3Diag(tridiag, Y, MAX_ITER, &norma);
 
-	// free_tridiag(tridiag);
-	// free(edo);
-	// free(X);
+		#ifdef LIKWID_TEST
+			LIKWID_MARKER_STOP("EDO_TEST");
+			LIKWID_MARKER_CLOSE;
+		#endif
+
+		tempo = timestamp() - tempo;
+
+		// Printando os resultados
+		prnEDOsl(edo);
+		print_vetor(Y, n);
+		printf("%d\n%23.15e\n%16.8e\n\n", it, norma, tempo);
+
+		// Zeramos o vetor solução para cada nova leitura a fim de que o teste não tenha nenhum pre redirecionamento
+		zera_vetor(Y, n);
+
+		free_tridiag(tridiag);
+
+	} while (scanf("%lf %lf %lf %lf", &edo->r1, &edo->r2, &edo->r3, &edo->r4) != EOF);
+
+	free(edo);
+	free(Y);
 
     return 0;
 }

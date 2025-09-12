@@ -15,11 +15,11 @@
     LFLAGS = -lm
 
 # Flags LIKWID
-    CFLAGS-likwid = -O0 -g -DLIKWID_PERFMON -I${LIKWID_INCLUDE} -DTESTE
+    CFLAGS-likwid = -O0 -g -DLIKWID_PERFMON -I${LIKWID_INCLUDE} -DLIKWID_TEST
     LFLAGS-likwid = -lm -L${LIKWID_LIB} -llikwid
 
 # Lista de arquivos para distribuição
-DISTFILES = *.c *.h LEIAME* Makefile *.dat
+DISTFILES = *.c *.h README* Makefile *.dat
 DISTDIR = ${USER}
 
 .PHONY: clean purge dist all lik-all

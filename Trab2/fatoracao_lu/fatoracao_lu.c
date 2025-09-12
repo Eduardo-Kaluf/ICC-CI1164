@@ -5,18 +5,17 @@
 #include <stdlib.h>
 
 #include "fatoracao_lu.h"
-#include "edo.h"
 
 void fatoracaoLu(Tridiag *tridiag, int n) {
     for (int i = 0; i < n; ++i) {
-        double m = tridiag->Di[i + 1] / tridiag->D[i];
+        real_t m = tridiag->Di[i + 1] / tridiag->D[i];
         tridiag->Di[i] = m;
         tridiag->D[i + 1] -= tridiag->Ds[i] * m;
     }
 }
 
-void resolveSl(Tridiag *tridiag, double *X) {
-    double *Y = malloc(tridiag->n * sizeof(double));
+void resolveSl(Tridiag *tridiag, real_t *X) {
+    real_t *Y = malloc(tridiag->n * sizeof(real_t));
 
     // resolve o sistema LY = B
     for (int i = 0; i < tridiag->n; ++i) {

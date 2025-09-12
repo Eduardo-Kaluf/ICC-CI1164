@@ -2,7 +2,9 @@
 
 #ifndef FATORACAO_LU_H
 #define FATORACAO_LU_H
-#include "edo.h"
+
+#include "../utils.h"
+#include "../edo.h"
 
 
 /**
@@ -19,6 +21,6 @@ void fatoracaoLu(Tridiag *tridiag, int n);
  * @param tridiag A matriz tridiagonal a resolvida.
  * @param X Um vetor de coeficientes onde a resposta será armazenada.
  */
-void resolveSl(Tridiag *tridiag, double *X);
+void resolveSl(Tridiag *tridiag, real_t *X);
 
 #endif //FATORACAO_LU_H
