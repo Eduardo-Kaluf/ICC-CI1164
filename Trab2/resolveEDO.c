@@ -11,7 +11,6 @@
 #include "edo.h"
 #include "utils.h"
 #include "gauss_seidel.h"
-#include "fatoracao_lu/fatoracao_lu.h"
 
 int main() {
 	fesetround(FE_DOWNWARD);
