@@ -11,6 +11,7 @@
 #include "edo.h"
 #include "utils.h"
 #include "gauss_seidel.h"
+#include "fatoracao_lu/fatoracao_lu.h"
 
 int main() {
 	fesetround(FE_DOWNWARD);
@@ -20,7 +21,7 @@ int main() {
 	const int n = edo->n;
 
 	// Vetor solução
-	real_t *Y = malloc(sizeof(real_t) * edo->n);
+	real_t *Y = calloc(n, sizeof(real_t));
 
 	int it;
 	real_t norma;

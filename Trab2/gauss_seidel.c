@@ -10,9 +10,9 @@
 
 int gaussSeidel_3Diag(Tridiag *sl, real_t *Y, int maxiter, real_t *norma) {
     const int n = sl->n;
-    int it;
+    int it = 0;
 
-    for (it = 1; it <= maxiter; it++) {
+    do {
         // Primeira linha não possui nenhum elemento da diagonal inferior
         Y[0] = (sl->B[0] - sl->Ds[0] * Y[1]) / sl->D[0];
 
@@ -23,9 +23,8 @@ int gaussSeidel_3Diag(Tridiag *sl, real_t *Y, int maxiter, real_t *norma) {
         Y[n - 1] = (sl->B[n - 1] - sl->Di[n - 2] * Y[n - 2] ) / sl->D[n - 1];
 
         *norma = normaL2_3Diag(sl, Y);
-        if (*norma <= 10e-5)
-            break;
-    }
+        it++;
+    } while (*norma > 10e-5 && it < maxiter);
 
     return it;
 }

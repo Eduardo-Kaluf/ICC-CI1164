@@ -11,7 +11,7 @@
     CC     = gcc
 
 # Flags Padrão
-    CFLAGS = -O0 -g
+    CFLAGS = -O0 -g -Wall -Wextra
     LFLAGS = -lm
 
 # Flags LIKWID
@@ -19,7 +19,7 @@
     LFLAGS-likwid = -lm -L${LIKWID_LIB} -llikwid
 
 # Lista de arquivos para distribuição
-DISTFILES = *.c *.h README* Makefile *.dat
+DISTFILES = *.c *.h README* Makefile *.dat teste.sh
 DISTDIR = ${USER}
 
 .PHONY: clean purge dist all lik-all
