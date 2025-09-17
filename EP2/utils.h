@@ -8,6 +8,7 @@
 #include <sys/time.h>
 
 #define MAX_ITER 100
+#define NORMA_STOP 1e-5
 
 // Valor absoluto de um número real. Alternativa ao uso da função 'fabs()'
 #define ABS(num)  ((num) < 0.0 ? -(num) : (num))

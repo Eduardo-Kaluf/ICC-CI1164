@@ -24,7 +24,7 @@ int gaussSeidel_3Diag(Tridiag *sl, real_t *Y, int maxiter, real_t *norma) {
 
         *norma = normaL2_3Diag(sl, Y);
         it++;
-    } while (*norma > 10e-5 && it < maxiter);
+    } while (*norma > NORMA_STOP && it < maxiter);
 
     return it;
 }
