@@ -44,7 +44,7 @@ real_t normaL2_3Diag (Tridiag *sl, real_t *Y) {
         else
             Ay_i = (sl->Di[i-1] * Y[i-1]) + (sl->D[i] * Y[i]) + (sl->Ds[i] * Y[i+1]);
 
-        normaL2 += pow(sl->B[i] - Ay_i, 2);
+        normaL2 += (sl->B[i] - Ay_i) * (sl->B[i] - Ay_i);
     }
 
     return sqrt(normaL2);
