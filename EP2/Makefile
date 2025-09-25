@@ -19,7 +19,7 @@
     LFLAGS-likwid = -lm -L${LIKWID_LIB} -llikwid
 
 # Lista de arquivos para distribuição
-DISTFILES = *.c *.h README* Makefile *.dat teste.sh
+DISTFILES = *.c *.h LEIAME* Makefile *.dat teste.sh
 DISTDIR = ${USER}
 
 .PHONY: clean purge dist all lik-all

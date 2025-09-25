@@ -1,6 +1,6 @@
 // EDUARDO KALUF - GRR 20241770
 
-#ifdef TESTE
+#ifdef LIKWID_TEST
 	#include <likwid.h>
 #endif
 
@@ -15,6 +15,10 @@
 int main() {
 	fesetround(FE_DOWNWARD);
 
+	#ifdef LIKWID_TEST
+		LIKWID_MARKER_INIT;
+	#endif
+
 	EDo *edo = read_edo();
 
 	const int n = edo->n;
@@ -23,6 +27,7 @@ int main() {
 	real_t *Y = calloc(n, sizeof(real_t));
 
 	int it;
+	int marker_n = 0;
 	real_t norma;
 
 	do {
@@ -32,15 +37,13 @@ int main() {
 		rtime_t tempo = timestamp();
 
 		#ifdef LIKWID_TEST
-			LIKWID_MARKER_INIT;
-			LIKWID_MARKER_START("EDO_TEST");
+			LIKWID_MARKER_START(markerName("EDO_TEST", marker_n));
 		#endif
 
 		it = gaussSeidel_3Diag(tridiag, Y, MAX_ITER, &norma);
 
 		#ifdef LIKWID_TEST
-			LIKWID_MARKER_STOP("EDO_TEST");
-			LIKWID_MARKER_CLOSE;
+			LIKWID_MARKER_STOP(markerName("EDO_TEST", marker_n));
 		#endif
 
 		tempo = timestamp() - tempo;
@@ -55,10 +58,15 @@ int main() {
 
 		free_tridiag(tridiag);
 
+		marker_n++;
 	} while (scanf("%lf %lf %lf %lf", &edo->r1, &edo->r2, &edo->r3, &edo->r4) != EOF);
 
 	free(edo);
 	free(Y);
+
+	#ifdef LIKWID_TEST
+		LIKWID_MARKER_CLOSE;
+	#endif
 
     return 0;
 }
