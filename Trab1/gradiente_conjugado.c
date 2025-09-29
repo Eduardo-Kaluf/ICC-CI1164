@@ -7,6 +7,7 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
     int size = n * sizeof(real_t);
     rtime_t tempo;
     real_t **M = malloc(n * n * sizeof(real_t));
+
     // TODO REMOVE NULL LATER WHEN MORE PRECONDITIONERS ARE ADDED
     geraPreCond(NULL, NULL, NULL, w, n, k, M, &tempo);
 
@@ -38,7 +39,7 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
 
         matrix_times_vector(M, n, R, Y);
 
-        if (aux < epsilon)
+        if (dot_product(R, R, n) < epsilon)
             return;
 
         real_t aux1 = dot_product(Y, R, n);
