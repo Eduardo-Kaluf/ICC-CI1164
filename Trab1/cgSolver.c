@@ -8,11 +8,11 @@ int main() {
     srandom(20252);
 
     int n, k, maxit;
-    real_t omega, epsilon;
+    real_t w, epsilon;
 
-    read_input(&n, &k, &omega, &maxit, &epsilon);
+    read_input(&n, &k, &w, &maxit, &epsilon);
 
-    printf("%d, %d, %f, %d, %f", n, k, omega, maxit, epsilon);
+    printf("%d, %d, %f, %d, %f", n, k, w, maxit, epsilon);
 
     return 0;
 }

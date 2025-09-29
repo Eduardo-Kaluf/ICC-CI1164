@@ -15,8 +15,8 @@ static inline real_t generateRandomB(unsigned int k);
  * @param k numero de diagonais da matriz A
  */
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k) {
-  static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
-  return ( (i==j) ? (real_t)(k<<1) : 1.0 )  * (real_t)random() * invRandMax;
+    static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
+    return ( (i==j) ? (real_t)(k<<1) : 1.0 )  * (real_t)random() * invRandMax;
 }
 
 /**
@@ -24,29 +24,65 @@ static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned in
  * @param k numero de diagonais da matriz A
  */
 static inline real_t generateRandomB(unsigned int k ) {
-  static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
-  return (real_t)(k<<2) * (real_t)random() * invRandMax;
+    static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
+    return (real_t)(k<<2) * (real_t)random() * invRandMax;
 }
 
 
+// B ANTES ERA UM PONTEIRO DE PONTEIROS (**B) ??????
+
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
-void criaKDiagonal(int n, int k, real_t **A, real_t **B) {
-  
+void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
+    fill_zeros(A, n);
+
+    int band_size = k / 2;
+
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j <= band_size + i && j < n; j++)
+            A[i][j] = generateRandomA(i, j, k);
+
+    for (int i = 0; i < n; i++)
+        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+            A[i][j] = generateRandomA(i, j, k);
+
+    for (int i = 0; i < n; i++) {
+        A[i][i] = generateRandomA(i, i, k);
+        B[i] = generateRandomB(k);
+    }
 }
 
 /* Gera matriz simetrica positiva */
 void genSimetricaPositiva(real_t *A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
-  *tempo = timestamp();
+    *tempo = timestamp();
 
-  *tempo = timestamp() - *tempo;
+    *tempo = timestamp() - *tempo;
 }
 
+// TODO, VER SE ZERAR A MATRIZ DEVE CONTAR COMO TEMPO DE EXECUÇÃO OU NÃO
+// A ANTES NÃO ERA APENAS UM PONTEIRO (*A) ?????
 
-void geraDLU (real_t *A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
-  *tempo = timestamp();
+// K IS ALWAYS A ODD NUMBER
+void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
+    fill_zeros(D, n);
+    fill_zeros(L, n);
+    fill_zeros(U, n);
 
+    *tempo = timestamp();
 
-  *tempo = timestamp() - *tempo;
+    int band_size = k / 2;
+
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j <= band_size + i && j < n; j++)
+            U[i][j] = A[i][j];
+
+    for (int i = 0; i < n; i++)
+        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+            L[i][j] = A[i][j];
+
+    for (int i = 0; i < n; i++)
+        D[i][i] = A[i][i];
+
+    *tempo = timestamp() - *tempo;
 }
 
 /**
@@ -54,20 +90,65 @@ void geraDLU (real_t *A, int n, int k, real_t **D, real_t **L, real_t **U, rtime
  *
  */
 void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
-  *tempo = timestamp();
+    fill_zeros(M, n);
 
+    *tempo = timestamp();
 
-  *tempo = timestamp() - *tempo;
+    switch (w) {
+        case -1.0:
+            // sem pré-condicionador
+
+            generate_identity(M, n);
+
+            break;
+        case 0.0:
+            // pré-condicionador de Jacobi
+
+            for (int i = 0; i < n; i++) {
+                if (D[i] != 0)
+                    M[i][i] = 1 / D[i];
+                else
+                    break; // RETORNAR ALGUM TIPO DE ERRO (DETERMINANTE DA MATRIZ É 0 E PORTANTO NÃO POSSUI INVERSA)
+            }
+
+            break;
+        case 1.0:
+            // pré-condicionador de Gauss-Seidel
+            break;
+        default:
+            // pré-condicionador SSOR
+    }
+
+      *tempo = timestamp() - *tempo;
 }
 
 
-real_t calcResiduoSL (real_t *A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
-  *tempo = timestamp();
+// A ANTES ERA UM PONTEIRO APENAS (*A) ????
+// ANTES A FUNÇÃO NÃO RETORNAVA UM PONTEIRO (real_t calcResiduoSL) ?????
 
-  real_t *r = calloc(n, sizeof(real_t));
+real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
+    *tempo = timestamp();
 
+    int b_size = n * sizeof(real_t);
 
-  *tempo = timestamp() - *tempo;
+    real_t *r = malloc(b_size);
+
+    memcpy(r, b, b_size);
+
+    int band_size = k / 2;
+
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j <= band_size + i && j < n; j++)
+            r[i] -= A[i][j] * X[j];
+
+    for (int i = 0; i < n; i++)
+        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+            r[i] -= A[i][j] * X[j];
+
+    for (int i = 0; i < n; i++)
+        r[i] -= A[i][i] * X[j];
+
+    *tempo = timestamp() - *tempo;
+
+    return r;
 }
-
-
