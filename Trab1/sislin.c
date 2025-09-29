@@ -55,6 +55,12 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
 void genSimetricaPositiva(real_t *A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
     *tempo = timestamp();
 
+    // TODO
+    // ASP should be A^t * A
+    // bsp should be A^t * B
+    // where A^t is the transposed A matrix
+
+
     *tempo = timestamp() - *tempo;
 }
 
