@@ -12,7 +12,7 @@ static inline real_t generateRandomB(unsigned int k);
 /**
  * Função que gera os coeficientes de um sistema linear k-diagonal
  * @param i,j coordenadas do elemento a ser calculado (0<=i,j<n)
- * @param k numero de diagonais da matriz A
+ * @param k Numero de diagonais da matriz A
  */
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k) {
     static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
@@ -21,7 +21,7 @@ static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned in
 
 /**
  * Função que gera os termos independentes de um sistema linear k-diagonal
- * @param k numero de diagonais da matriz A
+ * @param k Numero de diagonais da matriz A
  */
 static inline real_t generateRandomB(unsigned int k ) {
     static real_t invRandMax = 1.0 / (real_t)RAND_MAX;
@@ -103,7 +103,7 @@ void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime
  * Devolve matriz M⁻¹
  *
  */
-void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
+void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
     fill_zeros_matrix(M, n);
 
     *tempo = timestamp();
@@ -112,8 +112,8 @@ void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t
         generate_identity(M, n); // sem pré-condicionador
     else if (w == 0.0) {
         for (int i = 0; i < n; i++) { // pré-condicionador de Jacobi
-            if (D[i] != 0)
-                M[i][i] = 1 / D[i];
+            if (D[i][i] != 0)
+                M[i][i] = 1 / D[i][i];
             else
                 break; // RETORNAR ALGUM TIPO DE ERRO (DETERMINANTE DA MATRIZ É 0 E PORTANTO NÃO POSSUI INVERSA)
         }
@@ -128,7 +128,7 @@ void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t
 
 
 // TODO VERIFICAR SE ESTA FUNÇÃO DEVE RETORNAR A NORMA OU O VETOR RESIDUAL
-real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
+real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
     *tempo = timestamp();
 
     int b_size = n * sizeof(real_t);
@@ -150,7 +150,13 @@ real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *t
     for (int i = 0; i < n; i++)
         r[i] -= A[i][i] * X[i];
 
+
+    real_t norm = 0.0;
+
+    for (int i = 0; i < n; i++)
+        norm += r[i] * r[i];
+
     *tempo = timestamp() - *tempo;
 
-    return r;
+    return sqrt(norm);
 }

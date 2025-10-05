@@ -1,10 +1,10 @@
 CC = gcc
 
-CFLAGS = -O0
+CFLAGS = -O0 -g
 LFLAGS = -lm
 
 PROG = cgSolver
-MODULES = utils pcgc $(PROG)
+MODULES = utils gradiente_conjugado sislin $(PROG)
 OBJS = $(addsuffix .o,$(MODULES))
 SRCS = $(addsuffix .c,$(MODULES)) $(addsuffix .h,$(MODULES))
 

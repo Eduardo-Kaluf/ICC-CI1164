@@ -3,15 +3,27 @@
 #include <string.h>
 #include "sislin.h"
 
-void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, real_t w, int maxit, double epsilon) {
-    int size = n * sizeof(real_t);
-    rtime_t tempo;
-    real_t **M = malloc(n * n * sizeof(real_t));
+real_t calc_norm(real_t *X, real_t *X_old, int n) {
+    real_t norm_max = 0.0;
 
-    // TODO REMOVE NULL LATER WHEN MORE PRECONDITIONERS ARE ADDED
-    geraPreCond(NULL, NULL, NULL, w, n, k, M, &tempo);
+    for (int i = 0; i < n; i++) {
+        real_t current_norm = fabs(X_old[i] - X[i]);
+
+        if (current_norm > norm_max)
+            norm_max = current_norm;
+    }
+
+    return norm_max;
+}
+
+real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, double epsilon, rtime_t *tempo) {
+    int i;
+    int size = n * sizeof(real_t);
 
     fill_zeros_vector(X, n);
+
+    real_t *X_old = malloc(size);
+    fill_zeros_vector(X_old, n);
 
     real_t *R = malloc(size);
     memcpy(R, B, size);
@@ -24,10 +36,11 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
 
     real_t aux = dot_product(Y, R, n);
 
-
     real_t *Z = malloc(n * sizeof(real_t));
-    for (int i = 0; i < maxit; i++) {
 
+
+    *tempo = timestamp();
+    for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
         real_t s = aux / dot_product(V, Z, n);
 
@@ -42,6 +55,9 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
         if (dot_product(R, R, n) < epsilon)
             break;
 
+        for (int j = 0; j < n; j++)
+            X_old[j] = X[j];
+
         real_t aux1 = dot_product(Y, R, n);
 
         real_t m = aux1 / aux;
@@ -51,10 +67,13 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
         for (int j = 0; j < n; j++)
             V[j] = Y[j] + m * V[j];
     }
+    *tempo = (timestamp() - *tempo) / i;
 
     free(R);
     free(V);
     free(Z);
     free(Y);
     free(M);
+
+    return calc_norm(X, X_old, n);
 }

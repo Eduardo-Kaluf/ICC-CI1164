@@ -15,8 +15,8 @@ void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, rea
 
 void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo);
 
-void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t **M, rtime_t *tempo);
+void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, real_t **M, rtime_t *tempo);
 
-real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo);
+real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo);
 
 #endif // __SISLIN_H__

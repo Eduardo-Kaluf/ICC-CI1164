@@ -55,5 +55,15 @@ real_t dot_product(real_t *v1, real_t *v2, int n);
 
 void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv);
 
+void print_vector(real_t *v, int n);
+
+void print_matrix(real_t **m, int n);
+
+void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
+
+void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
+
+void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo);
+
 #endif // __UTILS_H__
 

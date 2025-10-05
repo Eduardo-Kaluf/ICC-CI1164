@@ -22,9 +22,9 @@ string_t markerName(string_t baseName, int n) {
 void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon) {
     scanf("%d", n);
     scanf("%d", k);
-    scanf("%f", w);
+    scanf("%lf", w);
     scanf("%d", maxit);
-    scanf("%f", epsilon);
+    scanf("%lf", epsilon);
 }
 
 void fill_zeros_matrix(real_t **m, int n) {
@@ -61,4 +61,68 @@ void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv) {
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
             rv[i] += m[i][j] * v[j];
+}
+
+void print_vector(real_t *v, int n) {
+    for (int i = 0; i < n; i++)
+        printf("%.16g ", v[i]);
+
+    printf("\n");
+}
+
+
+void print_matrix(real_t **m, int n) {
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+
+        for (int j = 0; j < n; j++)
+            printf("%.16g ", m[i][j]);
+
+        printf("]\n");
+    }
+
+    printf("\n");
+}
+
+void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
+    // TODO ADD PROPER ERROR HANDLING
+
+    *X = malloc(n * sizeof(real_t));
+    *B = malloc(n * sizeof(real_t));
+    *BSP = malloc(n * sizeof(real_t));
+
+    if (!(*X) || !(*B) || !(*BSP))
+        fprintf(stderr, "Failed malloc!\n");
+}
+
+void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
+    // TODO ADD PROPER ERROR HANDLING
+
+    *A = malloc(n * sizeof(real_t *));
+    *ASP = malloc(n * sizeof(real_t *));
+    *M = malloc(n * sizeof(real_t *));
+    *D = malloc(n * sizeof(real_t *));
+    *L = malloc(n * sizeof(real_t *));
+    *U = malloc(n * sizeof(real_t *));
+
+    if (!(*A) || !(*ASP) || !(*M) || !(*D) || !(*L) || !(*U))
+        fprintf(stderr, "Failed malloc!\n");
+
+    for (int i = 0; i < n; ++i) {
+        (*A)[i]   = malloc(n * sizeof(real_t));
+        (*ASP)[i] = malloc(n * sizeof(real_t));
+        (*M)[i]   = malloc(n * sizeof(real_t));
+        (*D)[i]   = malloc(n * sizeof(real_t));
+        (*L)[i]   = malloc(n * sizeof(real_t));
+        (*U)[i]   = malloc(n * sizeof(real_t));
+
+        if (!(*A)[i] || !(*ASP)[i] || !(*M)[i] || !(*D)[i] || !(*L)[i] || !(*U)[i])
+            fprintf(stderr, "Failed malloc!\n");
+    }
+}
+
+void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo) {
+    printf("%d\n", n);
+    print_vector(X, n);
+    printf("%.8g\n%.16g\n%.8g\n%.8g\n%.8g\n", norm, residuo, time_pc, time_iter, time_residuo);
 }
