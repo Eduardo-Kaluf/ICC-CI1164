@@ -156,7 +156,12 @@ real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *te
     for (int i = 0; i < n; i++)
         norm += r[i] * r[i];
 
+
+    norm = sqrt(norm);
+
+    free(r);
+
     *tempo = timestamp() - *tempo;
 
-    return sqrt(norm);
+    return norm;
 }

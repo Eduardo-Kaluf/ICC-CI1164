@@ -126,3 +126,27 @@ void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_p
     print_vector(X, n);
     printf("%.8g\n%.16g\n%.8g\n%.8g\n%.8g\n", norm, residuo, time_pc, time_iter, time_residuo);
 }
+
+void free_matrix(real_t **m, int n) {
+    if (m != NULL) {
+        for (int i = 0; i < n; i++) {
+            if (m[i] != NULL)
+                free(m[i]);
+        }
+
+        free(m);
+    }
+}
+
+void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n) {
+    free(X);
+    free(B);
+    free(BSP);
+
+    free_matrix(A, n);
+    free_matrix(ASP, n);
+    free_matrix(M, n);
+    free_matrix(D, n);
+    free_matrix(L, n);
+    free_matrix(U, n);
+}

@@ -65,5 +65,8 @@ void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t
 
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo);
 
-#endif // __UTILS_H__
+void free_matrix(real_t **m, int n);
 
+void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n);
+
+#endif // __UTILS_H__

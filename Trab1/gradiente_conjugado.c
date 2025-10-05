@@ -38,7 +38,6 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
     real_t *Z = malloc(n * sizeof(real_t));
 
-
     *tempo = timestamp();
     for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
@@ -67,13 +66,16 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
         for (int j = 0; j < n; j++)
             V[j] = Y[j] + m * V[j];
     }
+
     *tempo = (timestamp() - *tempo) / i;
+
+    real_t norm = calc_norm(X, X_old, n);
 
     free(R);
     free(V);
     free(Z);
     free(Y);
-    free(M);
+    free(X_old);
 
-    return calc_norm(X, X_old, n);
+    return norm;
 }
