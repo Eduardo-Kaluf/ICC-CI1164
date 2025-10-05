@@ -28,9 +28,6 @@ static inline real_t generateRandomB(unsigned int k ) {
     return (real_t)(k<<2) * (real_t)random() * invRandMax;
 }
 
-
-// B ANTES ERA UM PONTEIRO DE PONTEIROS (**B) ??????
-
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
 void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
     fill_zeros_matrix(A, n);
@@ -51,12 +48,13 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
     }
 }
 
-
-// A ANTES ERA UM PONTEIRO APENAS (*A) ????
-
 /* Gera matriz simetrica positiva */
 void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
     *tempo = timestamp();
+
+    // ASP should be A^t * A
+    // bsp should be A^t * B
+    // where A^t is the transposed A matrix
 
     // TODO SEE WHAT'S BETTER, JUST INVERT THE INDEXES TO ACHIEVE THE TRANSPOSE OR ACTUALLY CALCULATE A TRANSPOSED MATRIX TO MAXIMIZE CACHE USAGE
     // TODO STILL NEED TO FINISH THIS FUNCTION
@@ -74,16 +72,8 @@ void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, rea
         for (int j = 0; j < n; j++)
             bsp[i] += A[j][i] * b[j];
 
-
-    // ASP should be A^t * A
-    // bsp should be A^t * B
-    // where A^t is the transposed A matrix
-
     *tempo = timestamp() - *tempo;
 }
-
-// TODO, VER SE ZERAR A MATRIZ DEVE CONTAR COMO TEMPO DE EXECUÇÃO OU NÃO
-// A ANTES ERA UM PONTEIRO APENAS (*A) ????
 
 // K IS ALWAYS A ODD NUMBER
 void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
@@ -118,38 +108,26 @@ void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t
 
     *tempo = timestamp();
 
-    switch (w) {
-        case -1.0:
-            // sem pré-condicionador
-
-            generate_identity(M, n);
-
-            break;
-        case 0.0:
-            // pré-condicionador de Jacobi
-
-            for (int i = 0; i < n; i++) {
-                if (D[i] != 0)
-                    M[i][i] = 1 / D[i];
-                else
-                    break; // RETORNAR ALGUM TIPO DE ERRO (DETERMINANTE DA MATRIZ É 0 E PORTANTO NÃO POSSUI INVERSA)
-            }
-
-            break;
-        case 1.0:
-            // pré-condicionador de Gauss-Seidel
-            break;
-        default:
-            // pré-condicionador SSOR
+    if (w == -1.0)
+        generate_identity(M, n); // sem pré-condicionador
+    else if (w == 0.0) {
+        for (int i = 0; i < n; i++) { // pré-condicionador de Jacobi
+            if (D[i] != 0)
+                M[i][i] = 1 / D[i];
+            else
+                break; // RETORNAR ALGUM TIPO DE ERRO (DETERMINANTE DA MATRIZ É 0 E PORTANTO NÃO POSSUI INVERSA)
+        }
+    }
+    else {
+        return;
+        // pré-condicionador de Gauss-Seidel / pré-condicionador SSOR
     }
 
-      *tempo = timestamp() - *tempo;
+    *tempo = timestamp() - *tempo;
 }
 
 
-// A ANTES ERA UM PONTEIRO APENAS (*A) ????
-// ANTES A FUNÇÃO NÃO RETORNAVA UM PONTEIRO (real_t calcResiduoSL) ?????
-
+// TODO VERIFICAR SE ESTA FUNÇÃO DEVE RETORNAR A NORMA OU O VETOR RESIDUAL
 real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
     *tempo = timestamp();
 
@@ -170,7 +148,7 @@ real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *t
             r[i] -= A[i][j] * X[j];
 
     for (int i = 0; i < n; i++)
-        r[i] -= A[i][i] * X[j];
+        r[i] -= A[i][i] * X[i];
 
     *tempo = timestamp() - *tempo;
 

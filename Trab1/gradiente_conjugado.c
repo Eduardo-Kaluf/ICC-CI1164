@@ -40,7 +40,7 @@ void calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, int n, int k, re
         matrix_times_vector(M, n, R, Y);
 
         if (dot_product(R, R, n) < epsilon)
-            return;
+            break;
 
         real_t aux1 = dot_product(Y, R, n);
 

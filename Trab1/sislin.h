@@ -9,15 +9,14 @@
 #include "utils.h"
 #include "sislin.h"
 
-void criaKDiagonal(int n, int k, double **A, double *B);
+void criaKDiagonal(int n, int k, real_t **A, real_t *B);
 
-void genSimetricaPositiva(double *A, double *b, int n, int k, double **ASP, double **bsp, double *tempo);
+void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo);
 
-void geraDLU(double **A, int n, int k, double **D, double **L, double **U, double *tempo);
+void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo);
 
-void geraPreCond(double *D, double *L, double *U, double w, int n, int k, double **M, double *tempo);
+void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t **M, rtime_t *tempo);
 
-double calcResiduoSL(double *A, double *b, double *X, int n, int k, double *tempo);
+real_t *calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo);
 
 #endif // __SISLIN_H__
-
