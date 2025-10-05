@@ -49,8 +49,6 @@ void fill_zeros_matrix(real_t **m, int n);
 
 void fill_zeros_vector(real_t *v, int n);
 
-void generate_identity(real_t **m, int n);
-
 real_t dot_product(real_t *v1, real_t *v2, int n);
 
 void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv);
@@ -60,6 +58,8 @@ void print_vector(real_t *v, int n);
 void print_matrix(real_t **m, int n);
 
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
+
+void alloc_single_matrix(real_t ***m, int n);
 
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
 

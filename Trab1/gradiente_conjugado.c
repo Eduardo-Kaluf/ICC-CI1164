@@ -20,10 +20,7 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
     int i;
     int size = n * sizeof(real_t);
 
-    fill_zeros_vector(X, n);
-
-    real_t *X_old = malloc(size);
-    fill_zeros_vector(X_old, n);
+    real_t *X_old = calloc(n, sizeof(real_t));
 
     real_t *R = malloc(size);
     memcpy(R, B, size);

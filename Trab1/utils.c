@@ -37,13 +37,6 @@ void fill_zeros_vector(real_t *v, int n) {
     memset(v, 0, n * sizeof(real_t));
 }
 
-void generate_identity(real_t **m, int n) {
-    fill_zeros_matrix(m, n);
-
-    for (int i = 0; i < n; i++)
-        m[i][i] = 1.0;
-}
-
 real_t dot_product(real_t *v1, real_t *v2, int n) {
     real_t sum = 0.0;
 
@@ -70,7 +63,6 @@ void print_vector(real_t *v, int n) {
     printf("\n");
 }
 
-
 void print_matrix(real_t **m, int n) {
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -95,30 +87,35 @@ void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
         fprintf(stderr, "Failed malloc!\n");
 }
 
-void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
-    // TODO ADD PROPER ERROR HANDLING
-
-    *A = malloc(n * sizeof(real_t *));
-    *ASP = malloc(n * sizeof(real_t *));
-    *M = malloc(n * sizeof(real_t *));
-    *D = malloc(n * sizeof(real_t *));
-    *L = malloc(n * sizeof(real_t *));
-    *U = malloc(n * sizeof(real_t *));
-
-    if (!(*A) || !(*ASP) || !(*M) || !(*D) || !(*L) || !(*U))
+void alloc_single_matrix(real_t ***m, int n) {
+    *m = calloc(n, sizeof(real_t *));
+    if (!(*m)) {
         fprintf(stderr, "Failed malloc!\n");
+        return;
+    }
 
     for (int i = 0; i < n; ++i) {
-        (*A)[i]   = malloc(n * sizeof(real_t));
-        (*ASP)[i] = malloc(n * sizeof(real_t));
-        (*M)[i]   = malloc(n * sizeof(real_t));
-        (*D)[i]   = malloc(n * sizeof(real_t));
-        (*L)[i]   = malloc(n * sizeof(real_t));
-        (*U)[i]   = malloc(n * sizeof(real_t));
+        (*m)[i] = calloc(n, sizeof(real_t));
 
-        if (!(*A)[i] || !(*ASP)[i] || !(*M)[i] || !(*D)[i] || !(*L)[i] || !(*U)[i])
+        if (!(*m)[i]) {
             fprintf(stderr, "Failed malloc!\n");
+
+            for (int j = 0; j < i; j++)
+                free((*m)[j]);
+            free(*m);
+
+            return;
+        }
     }
+}
+
+void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
+    alloc_single_matrix(A, n);
+    alloc_single_matrix(ASP, n);
+    alloc_single_matrix(M, n);
+    alloc_single_matrix(D, n);
+    alloc_single_matrix(L, n);
+    alloc_single_matrix(U, n);
 }
 
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo) {

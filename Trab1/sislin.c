@@ -30,8 +30,6 @@ static inline real_t generateRandomB(unsigned int k ) {
 
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
 void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
-    fill_zeros_matrix(A, n);
-
     int band_size = k / 2;
 
     for (int i = 0; i < n; i++)
@@ -52,21 +50,13 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
 void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
     *tempo = timestamp();
 
-    // ASP should be A^t * A
-    // bsp should be A^t * B
-    // where A^t is the transposed A matrix
-
     // TODO SEE WHAT'S BETTER, JUST INVERT THE INDEXES TO ACHIEVE THE TRANSPOSE OR ACTUALLY CALCULATE A TRANSPOSED MATRIX TO MAXIMIZE CACHE USAGE
-    // TODO STILL NEED TO FINISH THIS FUNCTION
-
-    fill_zeros_matrix(ASP, n);
+    // TODO STILL NEED TO FINISH THIS FUNCTION (USE K FOR THE ITERATIONS)
 
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
             for (int h = 0; h < n; h++)
                 ASP[i][j] += A[h][i] * A[h][j];
-
-    fill_zeros_vector(bsp, n);
 
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
@@ -77,10 +67,6 @@ void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, rea
 
 // K IS ALWAYS A ODD NUMBER
 void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
-    fill_zeros_matrix(D, n);
-    fill_zeros_matrix(L, n);
-    fill_zeros_matrix(U, n);
-
     *tempo = timestamp();
 
     int band_size = k / 2;
@@ -104,12 +90,13 @@ void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime
  *
  */
 void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
-    fill_zeros_matrix(M, n);
-
     *tempo = timestamp();
 
-    if (w == -1.0)
-        generate_identity(M, n); // sem pré-condicionador
+    if (w == -1.0) {
+        // Sem pré-condicionador
+        for (int i = 0; i < n; i++)
+            M[i][i] = 1.0;
+    }
     else if (w == 0.0) {
         for (int i = 0; i < n; i++) { // pré-condicionador de Jacobi
             if (D[i][i] != 0)
@@ -126,36 +113,32 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
     *tempo = timestamp() - *tempo;
 }
 
-
-// TODO VERIFICAR SE ESTA FUNÇÃO DEVE RETORNAR A NORMA OU O VETOR RESIDUAL
 real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
     *tempo = timestamp();
 
     int b_size = n * sizeof(real_t);
+    int band_size = k / 2;
+    real_t norm = 0.0;
 
     real_t *r = malloc(b_size);
-
     memcpy(r, b, b_size);
 
-    int band_size = k / 2;
-
+    // Upper part of the matrix
     for (int i = 0; i < n; i++)
         for (int j = i + 1; j <= band_size + i && j < n; j++)
             r[i] -= A[i][j] * X[j];
 
+    // Lower part of the matrix
     for (int i = 0; i < n; i++)
         for (int j = i - 1; j >= i - band_size && j >= 0; j--)
             r[i] -= A[i][j] * X[j];
 
+    // Diagonal
     for (int i = 0; i < n; i++)
         r[i] -= A[i][i] * X[i];
 
-
-    real_t norm = 0.0;
-
     for (int i = 0; i < n; i++)
         norm += r[i] * r[i];
-
 
     norm = sqrt(norm);
 
