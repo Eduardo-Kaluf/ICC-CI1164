@@ -33,7 +33,7 @@ static inline real_t generateRandomB(unsigned int k ) {
 
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
 void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
-    fill_zeros(A, n);
+    fill_zeros_matrix(A, n);
 
     int band_size = k / 2;
 
@@ -51,27 +51,45 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
     }
 }
 
+
+// A ANTES ERA UM PONTEIRO APENAS (*A) ????
+
 /* Gera matriz simetrica positiva */
-void genSimetricaPositiva(real_t *A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
+void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
     *tempo = timestamp();
 
-    // TODO
+    // TODO SEE WHAT'S BETTER, JUST INVERT THE INDEXES TO ACHIEVE THE TRANSPOSE OR ACTUALLY CALCULATE A TRANSPOSED MATRIX TO MAXIMIZE CACHE USAGE
+    // TODO STILL NEED TO FINISH THIS FUNCTION
+
+    fill_zeros_matrix(ASP, n);
+
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            for (int h = 0; h < n; h++)
+                ASP[i][j] += A[h][i] * A[h][j];
+
+    fill_zeros_vector(bsp, n);
+
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            bsp[i] += A[j][i] * b[j];
+
+
     // ASP should be A^t * A
     // bsp should be A^t * B
     // where A^t is the transposed A matrix
-
 
     *tempo = timestamp() - *tempo;
 }
 
 // TODO, VER SE ZERAR A MATRIZ DEVE CONTAR COMO TEMPO DE EXECUÇÃO OU NÃO
-// A ANTES NÃO ERA APENAS UM PONTEIRO (*A) ?????
+// A ANTES ERA UM PONTEIRO APENAS (*A) ????
 
 // K IS ALWAYS A ODD NUMBER
 void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
-    fill_zeros(D, n);
-    fill_zeros(L, n);
-    fill_zeros(U, n);
+    fill_zeros_matrix(D, n);
+    fill_zeros_matrix(L, n);
+    fill_zeros_matrix(U, n);
 
     *tempo = timestamp();
 
@@ -96,7 +114,7 @@ void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime
  *
  */
 void geraPreCond(real_t *D, real_t *L, real_t *U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
-    fill_zeros(M, n);
+    fill_zeros_matrix(M, n);
 
     *tempo = timestamp();
 

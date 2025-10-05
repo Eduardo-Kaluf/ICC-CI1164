@@ -56,8 +56,7 @@ real_t dot_product(real_t *v1, real_t *v2, int n) {
 // rv = m * v
 void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv) {
 
-    for (int i = 0; i < n; i++)
-        rv[i] = 0.0;
+    fill_zeros_vector(rv, n);
 
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
