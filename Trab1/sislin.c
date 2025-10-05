@@ -148,3 +148,36 @@ real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *te
 
     return norm;
 }
+
+void SSOR (real_t **M, int n, int k, real_t w, real_t *D, real_t **L, real_t **U, rtime_t *tempo){
+
+    int band_size = k / 2;
+
+    for (int i = 0; i < n; i++){
+        M[i][i] = 1;
+        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+            M[i][j] = w*L[i][j] / D[j];    
+    }
+
+    //TODO NAO PERCORRER A MATRIZ TODA!
+    for (int i = 0; i < n; i++) { 
+        for (int j = 0; j < n; j++) { 
+            real_t novo_valor = 0;
+            for (int k = 0; k < n; k++) { 
+                novo_valor += M[i][k] * ( w * U[k][j]);
+            }
+            M[i][j] = novo_valor;
+        }
+    }
+
+    for (int i = 0; i < n; i++){
+        M[i][i] += D[i];
+        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+            M[i][j] += w*L[i][j];    
+    }
+
+    //TODO MATRIZ INVERSA
+
+
+
+}
