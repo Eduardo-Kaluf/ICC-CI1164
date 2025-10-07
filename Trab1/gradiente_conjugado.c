@@ -83,6 +83,28 @@ real_t calc_norm(real_t *X, real_t *X_old, int n) {
 
 //     for(int i )
 // }
+void ssor(real_t **A, real_t *R, real_t *Y, int n, real_t w) {
+    real_t *aux = calloc(n, sizeof(real_t));
+
+    // foward: (D + ωL) y = ωD r
+    for (int i = 0; i < n; i++) {
+        real_t soma = 0.0;
+        for (int j = 0; j < i; j++)
+            soma += A[i][j] * aux[j];
+        aux[i] = (A[i][i] * R[i] - w * soma) / (A[i][i]);
+    }
+
+    memset(Y, 0, n * sizeof(real_t));
+    // backward: (D + ωU) Y = ωD y
+    for (int i = n - 1; i >= 0; i--) {
+        real_t soma = 0.0;
+        for (int j = i + 1; j < n; j++)
+            soma += A[i][j] * Y[j];
+        Y[i] = (aux[i] - w * soma) / (A[i][i]);
+    }
+
+    free(aux);
+}
 
 void jacobi(real_t **A, real_t *R, real_t *V, int n){
 
@@ -91,15 +113,15 @@ void jacobi(real_t **A, real_t *R, real_t *V, int n){
     }
 }
 
-void precondicionador(real_t **A, real_t *R, real_t *Z, int n, real_t w){
+void precondicionador(real_t **A, real_t *R, real_t *Y, int n, real_t w){
     
     if(w == 0.0) {
-        jacobi(A, R, Z, n);
+        jacobi(A, R, Y, n);
     } else if(w == -1.0){
         printf("aaaa\n");
-        memcpy(Z, R, n * sizeof(real_t));
+        memcpy(Y, R, n * sizeof(real_t));
     } else {
-        //ssor(A, R, Z, n, w);
+        ssor(A, R, Y, n, w);
     } 
 }
 
