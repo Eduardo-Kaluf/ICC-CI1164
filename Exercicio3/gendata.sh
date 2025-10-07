@@ -30,6 +30,7 @@ do
 	likwid-perfctr -O -C ${CPU} -g ${m} -o ${LIKWID_OUT} -m ./${PROG} ${n} >>${TEMPOS}
     done
 
+    # TODO TODO TODO
     # Colocar aqui comando(s) que, a partir dos arquivos '.txt', gera (para cada métrica) um arquivo
     # CSV com 5 colunas:
     # N, metrica_matvet,metrica_matvet_otim, metrica_matmat, metrica_matmat_otim

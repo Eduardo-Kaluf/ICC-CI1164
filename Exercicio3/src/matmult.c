@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         printf ("=================================\n\n");
     #endif /* _DEBUG_ */
 
-    // PUT LIKWID MARKERS HERE AND OPTIMAZED FUNCTIONS
+    // TODO TODO TODO PUT LIKWID MARKERS HERE AND OPTIMAZED FUNCTIONS
 
     multMatVet (mRow_1, vet, n, n, res);
         
