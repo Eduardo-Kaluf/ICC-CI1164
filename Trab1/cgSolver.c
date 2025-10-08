@@ -25,13 +25,12 @@ int main() {
     genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
 
     // TODO TODO TODO SEE IF DLU SHOULD BE CALCULATED WITH A OR WITH ASP
-    // if (w >= 0.0)
-    //     geraDLU(A, n, k, D, L, U, &time_dlu);
+    if (w >= 0.0)
+        geraDLU(A, n, k, D, L, U, &time_dlu);
 
-    //geraPreCond(D, L, U, w, n, k, Diag, &time_pc);    
+    geraPreCond(D, L, U, w, n, k, M, &time_pc);
 
-
-    real_t norm = calc_gradiente_conjugado(ASP, BSP, X, n, maxit, epsilon, &time_iter, w);
+    real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, epsilon, &time_iter);
 
     real_t residuo = calcResiduoSL(ASP, BSP, X, n, k, &time_residuo);
 
