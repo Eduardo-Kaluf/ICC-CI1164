@@ -147,3 +147,33 @@ void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP
     free_matrix(L, n);
     free_matrix(U, n);
 }
+
+void matrix_sum (real_t **A, real_t **B, int n, real_t **C){
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            C[i][j] = A[i][j] + B[i][j];
+        }
+    }
+}
+
+void scalar_mul(real_t **A, int n, real_t value, real_t **dest) {
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            dest[i][j] = A[i][j] * value;
+        }
+    }
+}
+
+void matrix_mul(real_t **A, real_t **B, int n, real_t **C) {
+
+    for (int i=0; i<n; ++i) {
+        for (int j=0; j<n; ++j) {
+            real_t s = 0.0;
+            
+            for (int k=0; k<n; k++) 
+                s += A[i][k] * B[k][j];
+            
+            C[i][j] = s;
+        }
+    }
+}

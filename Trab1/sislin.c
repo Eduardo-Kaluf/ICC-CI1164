@@ -149,35 +149,78 @@ real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *te
     return norm;
 }
 
-void SSOR (real_t **M, int n, int k, real_t w, real_t *D, real_t **L, real_t **U, rtime_t *tempo){
+void invert_lower (real_t **L, real_t **L_inv, int n){
 
-    int band_size = k / 2;
+    fill_zeros_matrix(L_inv, n);
+    for(int c = 0; c < n; ++c){
+        for(int i = 0; i < n; ++i) {
+            real_t s = (i==c) ? 1.0 : 0.0;
 
-    for (int i = 0; i < n; i++){
-        M[i][i] = 1;
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            M[i][j] = w*L[i][j] / D[j];    
+            for (int j = 0; j < i; ++j) 
+                s -= L[i][j] * L_inv[j][c];
+
+            L_inv[i][c] = s / L[i][i];
+        }
+        
     }
+}
 
-    //TODO NAO PERCORRER A MATRIZ TODA!
-    for (int i = 0; i < n; i++) { 
-        for (int j = 0; j < n; j++) { 
-            real_t novo_valor = 0;
-            for (int k = 0; k < n; k++) { 
-                novo_valor += M[i][k] * ( w * U[k][j]);
-            }
-            M[i][j] = novo_valor;
+void invert_upper (real_t **U, real_t **U_inv, int n) {
+    
+    fill_zeros_matrix(U_inv, n);
+    for(int c = 0; c < n; ++c){
+        for (int i = n-1; i >= 0; --i) {
+            real_t s = (i==c) ? 1.0 : 0.0;
+
+            for (int j = i+1; j < n; ++j) 
+                s -= U[i][j] * U_inv[j][c];
+            
+            U_inv[i][c] = s / U[i][i];
         }
     }
-
-    for (int i = 0; i < n; i++){
-        M[i][i] += D[i];
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            M[i][j] += w*L[i][j];    
-    }
-
-    //TODO MATRIZ INVERSA
-
-
-
 }
+
+real_t **ssor_Minv(real_t **A, int n, int k, real_t w, real_t *D, real_t **L, real_t **U, rtime_t *tempo){
+    real_t **AL, **AU, **AD;
+    //nao seria melhor isso retornar uma matriz?
+    alloc_single_matrix(AL, n);
+    alloc_single_matrix(AU, n);
+    alloc_single_matrix(AD, n);
+
+    geraDLU(A, n, k, AD, AL, AU, time);
+
+    //TODO melhorar essas funções para K diagonais
+    scalar_mul(AL, n, w, AL);
+    scalar_mul(AU, n, w, AU);
+
+    matrix_sum(AL, AD, n, AL);
+    matriz_sum(AU, AD, n, AU);
+
+    // calculando as inversas
+    real_t **AL_inv, **AU_inv;
+    alloc_single_matrix(AL_inv, n);
+    alloc_single_matrix(AU_inv, n);
+
+    invert_lower(AL, AL_inv, n);
+    invert_upper(AU, AU_inv, n);
+
+    real_t **temp;
+    alloc_single_matrix(temp, n);
+
+    matrix_mul(AU_inv, AD, n, temp);
+
+    real_t **M_inv;
+    alloc_single_matrix(M_inv, n);
+
+    matrix_mul(temp, AL_inv, n, M_inv);
+
+    free_matrix(AL, n);
+    free_matrix(AU, n);
+    free_matrix(AD, n);
+    free_matrix(AL_inv, n);
+    free_matrix(AU_inv, n);
+    free_matrix(temp, n);
+
+    return M_inv;
+}
+
