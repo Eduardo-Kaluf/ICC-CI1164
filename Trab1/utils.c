@@ -177,3 +177,8 @@ void matrix_mul(real_t **A, real_t **B, int n, real_t **C) {
         }
     }
 }
+
+void copy_matrix(real_t **A, real_t **B, int n){
+    for (int i=0;i<n;i++) 
+        memcpy(B[i], A[i], n * sizeof(real_t));
+}

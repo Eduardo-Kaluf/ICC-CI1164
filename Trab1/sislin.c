@@ -106,8 +106,8 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
         }
     }
     else {
-        return;
         // pré-condicionador de Gauss-Seidel / pré-condicionador SSOR
+        ssor_Minv(L, U, D, n, k, w, tempo, M);
     }
 
     *tempo = timestamp() - *tempo;
@@ -180,47 +180,42 @@ void invert_upper (real_t **U, real_t **U_inv, int n) {
     }
 }
 
-real_t **ssor_Minv(real_t **A, int n, int k, real_t w, real_t *D, real_t **L, real_t **U, rtime_t *tempo){
-    real_t **AL, **AU, **AD;
+//seria melhor se recebesse a matriz A completa
+void ssor_Minv(real_t **L, real_t **U,real_t **D, int n, int k, real_t w, rtime_t *tempo, real_t **M_inv){
+    real_t **AL, **AU;
     //nao seria melhor isso retornar uma matriz?
-    alloc_single_matrix(AL, n);
-    alloc_single_matrix(AU, n);
-    alloc_single_matrix(AD, n);
+    alloc_single_matrix(&AL, n);
+    alloc_single_matrix(&AU, n);
 
-    geraDLU(A, n, k, AD, AL, AU, time);
+    copy_matrix(AL, L, n);
+    copy_matrix(AU, U, n);
 
     //TODO melhorar essas funções para K diagonais
     scalar_mul(AL, n, w, AL);
     scalar_mul(AU, n, w, AU);
 
-    matrix_sum(AL, AD, n, AL);
-    matriz_sum(AU, AD, n, AU);
+    matrix_sum(AL, D, n, AL);
+    matrix_sum(AU, D, n, AU);
 
     // calculando as inversas
     real_t **AL_inv, **AU_inv;
-    alloc_single_matrix(AL_inv, n);
-    alloc_single_matrix(AU_inv, n);
+    alloc_single_matrix(&AL_inv, n);
+    alloc_single_matrix(&AU_inv, n);
 
     invert_lower(AL, AL_inv, n);
     invert_upper(AU, AU_inv, n);
 
     real_t **temp;
-    alloc_single_matrix(temp, n);
+    alloc_single_matrix(&temp, n);
 
-    matrix_mul(AU_inv, AD, n, temp);
-
-    real_t **M_inv;
-    alloc_single_matrix(M_inv, n);
+    matrix_mul(AU_inv, D, n, temp);
 
     matrix_mul(temp, AL_inv, n, M_inv);
 
     free_matrix(AL, n);
     free_matrix(AU, n);
-    free_matrix(AD, n);
     free_matrix(AL_inv, n);
     free_matrix(AU_inv, n);
     free_matrix(temp, n);
-
-    return M_inv;
 }
 

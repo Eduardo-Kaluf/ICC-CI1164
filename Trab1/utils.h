@@ -63,6 +63,8 @@ void print_vector(real_t *v, int n);
 
 void print_matrix(real_t **m, int n);
 
+void copy_matrix(real_t **A, real_t **B, int n);
+
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
 
 void alloc_single_matrix(real_t ***m, int n);
