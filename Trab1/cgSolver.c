@@ -24,7 +24,6 @@ int main() {
 
     genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
 
-    // TODO TODO TODO SEE IF DLU SHOULD BE CALCULATED WITH A OR WITH ASP
     if (w >= 0.0)
         geraDLU(ASP, n, k, D, L, U, &time_dlu);
 

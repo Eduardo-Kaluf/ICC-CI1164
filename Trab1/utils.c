@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "utils.h"
+#include "matriz.h"
 
 
 rtime_t timestamp(void) {

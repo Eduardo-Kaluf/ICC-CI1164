@@ -5,6 +5,8 @@
 
 #include "utils.h"
 #include "sislin.h"
+#include "matriz.h"
+
 
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k);
 static inline real_t generateRandomB(unsigned int k);
@@ -50,14 +52,27 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
 void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
     *tempo = timestamp();
 
-    // TODO SEE WHAT'S BETTER, JUST INVERT THE INDEXES TO ACHIEVE THE TRANSPOSE OR ACTUALLY CALCULATE A TRANSPOSED MATRIX TO MAXIMIZE CACHE USAGE
-    // TODO STILL NEED TO FINISH THIS FUNCTION (USE K FOR THE ITERATIONS)
-
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            for (int h = 0; h < n; h++)
+    // Calcula a matriz ASP (A^T * A), aproveitando a estrutura k-diagonal
+    for (int i = 0; i < n; i++) {
+        for (int j = i; j < n; j++) { // Itera apenas sobre a parte superior da matriz
+            ASP[i][j] = 0.0;
+            
+            // Define o intervalo de h onde A[h][i] e A[h][j] podem ser não nulos
+            int h_start = fmax(0, fmax(i - k, j - k));
+            int h_end = fmin(n, fmin(i + k + 1, j + k + 1));
+            
+            for (int h = h_start; h < h_end; h++) {
                 ASP[i][j] += A[h][i] * A[h][j];
+            }
 
+            // Atribui o valor à parte inferior, por simetria
+            if (i != j) {
+                ASP[j][i] = ASP[i][j];
+            }
+        }
+    }
+    
+    //multiplica pela transposta
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
             bsp[i] += A[j][i] * b[j];

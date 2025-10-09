@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include "sislin.h"
+#include "matriz.h"
 
 real_t calc_norm(real_t *X, real_t *X_old, int n) {
     real_t norm_max = 0.0;
