@@ -26,7 +26,7 @@ int main() {
 
     // TODO TODO TODO SEE IF DLU SHOULD BE CALCULATED WITH A OR WITH ASP
     if (w >= 0.0)
-        geraDLU(A, n, k, D, L, U, &time_dlu);
+        geraDLU(ASP, n, k, D, L, U, &time_dlu);
 
     geraPreCond(D, L, U, w, n, k, M, &time_pc);
 

@@ -45,35 +45,17 @@ string_t markerName(string_t baseName, int n);
 
 void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon);
 
-void fill_zeros_matrix(real_t **m, int n);
-
 void fill_zeros_vector(real_t *v, int n);
 
 real_t dot_product(real_t *v1, real_t *v2, int n);
 
-void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv);
-
-void matrix_sum (real_t **A, real_t **B, int n, real_t **C);
-
-void scalar_mul(real_t **A, int n, real_t value, real_t **dest);
-
-void matrix_mul(real_t **A, real_t **B, int n, real_t **C);
-
 void print_vector(real_t *v, int n);
 
-void print_matrix(real_t **m, int n);
-
-void copy_matrix(real_t **A, real_t **B, int n);
-
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
-
-void alloc_single_matrix(real_t ***m, int n);
 
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
 
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo);
-
-void free_matrix(real_t **m, int n);
 
 void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n);
 

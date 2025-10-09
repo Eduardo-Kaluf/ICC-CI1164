@@ -191,11 +191,11 @@ void ssor_Minv(real_t **L, real_t **U,real_t **D, int n, int k, real_t w, rtime_
     copy_matrix(AU, U, n);
 
     //TODO melhorar essas funções para K diagonais
-    scalar_mul(AL, n, w, AL);
-    scalar_mul(AU, n, w, AU);
+    matrix_times_scalar(AL, n, w, AL);
+    matrix_times_scalar(AU, n, w, AU);
 
-    matrix_sum(AL, D, n, AL);
-    matrix_sum(AU, D, n, AU);
+    sum_matrix(AL, D, n, AL);
+    sum_matrix(AU, D, n, AU);
 
     // calculando as inversas
     real_t **AL_inv, **AU_inv;
@@ -208,9 +208,9 @@ void ssor_Minv(real_t **L, real_t **U,real_t **D, int n, int k, real_t w, rtime_
     real_t **temp;
     alloc_single_matrix(&temp, n);
 
-    matrix_mul(AU_inv, D, n, temp);
+    matrix_times_matrix(AU_inv, D, n, temp);
 
-    matrix_mul(temp, AL_inv, n, M_inv);
+    matrix_times_matrix(temp, AL_inv, n, M_inv);
 
     free_matrix(AL, n);
     free_matrix(AU, n);

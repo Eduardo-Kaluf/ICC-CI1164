@@ -5,10 +5,10 @@
 #include "utils.h"
 
 
-rtime_t timestamp (void) {
-  struct timespec tp;
-  clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
-  return ( (rtime_t) tp.tv_sec*1.0e3 + (rtime_t) tp.tv_nsec*1.0e-6 );
+rtime_t timestamp(void) {
+    struct timespec tp;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
+    return ( (rtime_t) tp.tv_sec*1.0e3 + (rtime_t) tp.tv_nsec*1.0e-6 );
 }
 
 string_t markerName(string_t baseName, int n) {
@@ -27,11 +27,6 @@ void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon) {
     scanf("%lf", epsilon);
 }
 
-void fill_zeros_matrix(real_t **m, int n) {
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            m[i][j] = 0.0;
-}
 
 void fill_zeros_vector(real_t *v, int n) {
     memset(v, 0, n * sizeof(real_t));
@@ -46,32 +41,9 @@ real_t dot_product(real_t *v1, real_t *v2, int n) {
     return sum;
 }
 
-// rv = m * v
-void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv) {
-
-    fill_zeros_vector(rv, n);
-
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
-            rv[i] += m[i][j] * v[j];
-}
-
 void print_vector(real_t *v, int n) {
     for (int i = 0; i < n; i++)
         printf("%.16g ", v[i]);
-
-    printf("\n");
-}
-
-void print_matrix(real_t **m, int n) {
-    for (int i = 0; i < n; i++) {
-        printf("[ ");
-
-        for (int j = 0; j < n; j++)
-            printf("%.16g ", m[i][j]);
-
-        printf("]\n");
-    }
 
     printf("\n");
 }
@@ -87,27 +59,6 @@ void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
         fprintf(stderr, "Failed malloc!\n");
 }
 
-void alloc_single_matrix(real_t ***m, int n) {
-    *m = calloc(n, sizeof(real_t *));
-    if (!(*m)) {
-        fprintf(stderr, "Failed malloc!\n");
-        return;
-    }
-
-    for (int i = 0; i < n; ++i) {
-        (*m)[i] = calloc(n, sizeof(real_t));
-
-        if (!(*m)[i]) {
-            fprintf(stderr, "Failed malloc!\n");
-
-            for (int j = 0; j < i; j++)
-                free((*m)[j]);
-            free(*m);
-
-            return;
-        }
-    }
-}
 
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
     alloc_single_matrix(A, n);
@@ -124,17 +75,6 @@ void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_p
     printf("%.8g\n%.16g\n%.8g\n%.8g\n%.8g\n", norm, residuo, time_pc, time_iter, time_residuo);
 }
 
-void free_matrix(real_t **m, int n) {
-    if (m != NULL) {
-        for (int i = 0; i < n; i++) {
-            if (m[i] != NULL)
-                free(m[i]);
-        }
-
-        free(m);
-    }
-}
-
 void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n) {
     free(X);
     free(B);
@@ -148,37 +88,3 @@ void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP
     free_matrix(U, n);
 }
 
-void matrix_sum (real_t **A, real_t **B, int n, real_t **C){
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            C[i][j] = A[i][j] + B[i][j];
-        }
-    }
-}
-
-void scalar_mul(real_t **A, int n, real_t value, real_t **dest) {
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            dest[i][j] = A[i][j] * value;
-        }
-    }
-}
-
-void matrix_mul(real_t **A, real_t **B, int n, real_t **C) {
-
-    for (int i=0; i<n; ++i) {
-        for (int j=0; j<n; ++j) {
-            real_t s = 0.0;
-            
-            for (int k=0; k<n; k++) 
-                s += A[i][k] * B[k][j];
-            
-            C[i][j] = s;
-        }
-    }
-}
-
-void copy_matrix(real_t **A, real_t **B, int n){
-    for (int i=0;i<n;i++) 
-        memcpy(B[i], A[i], n * sizeof(real_t));
-}

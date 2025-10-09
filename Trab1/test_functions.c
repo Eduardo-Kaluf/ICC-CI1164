@@ -7,7 +7,7 @@
 #include "utils.h"
 
 
-int compare_doubles(double a, double b) {
+int compare_doubles(real_t a, real_t b) {
     return fabs(a - b) < 1e-9;
 }
 
