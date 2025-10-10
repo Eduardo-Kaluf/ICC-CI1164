@@ -1,21 +1,9 @@
-#include "gradiente_conjugado.h"
-
 #include <string.h>
-#include "sislin.h"
+#include <math.h>
+
+#include "gradiente_conjugado.h"
 #include "matriz.h"
 
-real_t calc_norm(real_t *X, real_t *X_old, int n) {
-    real_t norm_max = 0.0;
-
-    for (int i = 0; i < n; i++) {
-        real_t current_norm = fabs(X_old[i] - X[i]);
-
-        if (current_norm > norm_max)
-            norm_max = current_norm;
-    }
-
-    return norm_max;
-}
 
 real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
     int i;
@@ -76,4 +64,17 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
     free(X_old);
 
     return norm;
+}
+
+real_t calc_norm(real_t *X, real_t *X_old, int n) {
+    real_t norm_max = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        real_t current_norm = fabs(X_old[i] - X[i]);
+
+        if (current_norm > norm_max)
+            norm_max = current_norm;
+    }
+
+    return norm_max;
 }

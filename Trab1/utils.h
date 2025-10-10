@@ -2,8 +2,6 @@
 #define __UTILS_H__
 
 #include <stdlib.h>
-#include <time.h>
-#include <sys/time.h>
 
 // Valor absoluto de um número. Alternativa ao uso da função 'fabs()'
 #define ABS(num)  ((num) < 0.0 ? -(num) : (num))

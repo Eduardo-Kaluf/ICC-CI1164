@@ -4,6 +4,7 @@
 
 #include "utils.h"
 #include "matriz.h"
+#include <time.h>
 
 
 rtime_t timestamp(void) {

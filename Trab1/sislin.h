@@ -1,13 +1,8 @@
 #ifndef __SISLIN_H__
 #define __SISLIN_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
 #include "utils.h"
-#include "sislin.h"
+
 
 void criaKDiagonal(int n, int k, real_t **A, real_t *B);
 

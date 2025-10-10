@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include <stdlib.h>    /* for exit e random/srandom */
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #include "utils.h"
 #include "sislin.h"
@@ -58,8 +59,8 @@ void genSimetricaPositiva(real_t **A, real_t *b, int n, int k, real_t **ASP, rea
             ASP[i][j] = 0.0;
             
             // Define o intervalo de h onde A[h][i] e A[h][j] podem ser não nulos
-            int h_start = fmax(0, fmax(i - k, j - k));
-            int h_end = fmin(n, fmin(i + k + 1, j + k + 1));
+            int h_start = (int) fmax(0, fmax(i - k, j - k));
+            int h_end = (int) fmin(n, fmin(i + k + 1, j + k + 1));
             
             for (int h = h_start; h < h_end; h++) {
                 ASP[i][j] += A[h][i] * A[h][j];
