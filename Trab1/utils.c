@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+#include <stdnoreturn.h>
 
 #include "utils.h"
 #include "matriz.h"
-#include <time.h>
+#include "vetor.h"
 
 
 rtime_t timestamp(void) {
@@ -22,45 +24,15 @@ string_t markerName(string_t baseName, int n) {
 }
 
 void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon) {
-    scanf("%d", n);
-    scanf("%d", k);
-    scanf("%lf", w);
-    scanf("%d", maxit);
-    scanf("%lf", epsilon);
-}
-
-
-void fill_zeros_vector(real_t *v, int n) {
-    memset(v, 0, n * sizeof(real_t));
-}
-
-real_t dot_product(real_t *v1, real_t *v2, int n) {
-    real_t sum = 0.0;
-
-    for (int i = 0; i < n; i++)
-        sum += v1[i] * v2[i];
-
-    return sum;
-}
-
-void print_vector(real_t *v, int n) {
-    for (int i = 0; i < n; i++)
-        printf("%.16g ", v[i]);
-
-    printf("\n");
+    if (scanf("%d %d %lf %d %lf", n, k, w, maxit, epsilon) != N_INPUTS)
+        handle_error("Erro ao ler o input");
 }
 
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
-    // TODO ADD PROPER ERROR HANDLING
-
-    *X = malloc(n * sizeof(real_t));
-    *B = malloc(n * sizeof(real_t));
-    *BSP = malloc(n * sizeof(real_t));
-
-    if (!(*X) || !(*B) || !(*BSP))
-        fprintf(stderr, "Failed malloc!\n");
+    *X   = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    *B   = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    *BSP = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
 }
-
 
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
     alloc_single_matrix(A, n);
@@ -72,21 +44,47 @@ void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t
 }
 
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo) {
+    if (!X)
+        handle_error("Tentativa de acesso a um ponteiro nulo");
+
     printf("%d\n", n);
+
     print_vector(X, n);
-    printf("%.8g\n%.16g\n%.8g\n%.8g\n%.8g\n", norm, residuo, time_pc, time_iter, time_residuo);
+
+    printf("%.8g\n"
+                 "%.16g\n"
+                 "%.8g\n"
+                 "%.8g\n"
+                 "%.8g\n", norm, residuo, time_pc, time_iter, time_residuo);
+
 }
 
-void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n) {
-    free(X);
-    free(B);
-    free(BSP);
+void free_all_memory(real_t **X, real_t **B, real_t **BSP, real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
+    if (*X) {
+        free(*X);
+        *X = NULL;
+    }
 
-    free_matrix(A, n);
-    free_matrix(ASP, n);
-    free_matrix(M, n);
-    free_matrix(D, n);
-    free_matrix(L, n);
-    free_matrix(U, n);
+    if (*B) {
+        free(*B);
+        *B = NULL;
+    }
+
+    if (*BSP) {
+        free(*BSP);
+        *BSP = NULL;
+    }
+
+    free_matrix(*A, n);
+    free_matrix(*ASP, n);
+    free_matrix(*M, n);
+    free_matrix(*D, n);
+    free_matrix(*L, n);
+    free_matrix(*U, n);
 }
 
+void handle_error(char *message) {
+    fprintf(stderr, "FATAL ERROR: %s\n", message);
+
+    exit(EXIT_FAILURE);
+}

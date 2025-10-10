@@ -37,7 +37,7 @@ int main() {
 
     print_results(n, X, norm, residuo, total_pc_time, time_iter, time_residuo);
 
-    free_all_memory(X, B, BSP, A, ASP, M, D, L, U, n);
+    free_all_memory(&X, &B, &BSP, &A, &ASP, &M, &D, &L, &U, n);
 
     return 0;
 }

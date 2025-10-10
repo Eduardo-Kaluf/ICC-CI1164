@@ -1,47 +1,44 @@
-#include <string.h>
 #include <math.h>
 
 #include "gradiente_conjugado.h"
 #include "matriz.h"
+#include "vetor.h"
 
 
 real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
     int i;
-    int size = n * sizeof(real_t);
 
-    real_t *X_old = calloc(n, sizeof(real_t));
+    real_t *X_old = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
 
-    real_t *R = malloc(size);
-    memcpy(R, B, size);
+    real_t *R = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    copy_vector(R, B, n);
 
-    real_t *V = malloc(n * sizeof(real_t));
+    real_t *V = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
     matrix_times_vector(M, n, B, V);
 
-    real_t *Y = malloc(n * sizeof(real_t));
+    real_t *Y = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
     matrix_times_vector(M, n, R, Y);
 
     real_t aux = dot_product(Y, R, n);
 
-    real_t *Z = malloc(n * sizeof(real_t));
+    real_t *Z = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
 
     *tempo = timestamp();
     for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
+
         real_t s = aux / dot_product(V, Z, n);
 
-        for (int j = 0; j < n; j++)
-            X[j] += s * V[j];
+        sum_vector_times_scalar(V, n, s, X);
 
-        for (int j = 0; j < n; j++)
-            R[j] -= s * Z[j];
+        sum_vector_times_scalar(Z, n, -s, R);
 
         matrix_times_vector(M, n, R, Y);
 
         if (dot_product(R, R, n) < epsilon)
             break;
 
-        for (int j = 0; j < n; j++)
-            X_old[j] = X[j];
+        copy_vector(X_old, X, n);
 
         real_t aux1 = dot_product(Y, R, n);
 
@@ -53,15 +50,12 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
             V[j] = Y[j] + m * V[j];
     }
 
+    // Média do tempo
     *tempo = (timestamp() - *tempo) / i;
 
     real_t norm = calc_norm(X, X_old, n);
 
-    free(R);
-    free(V);
-    free(Z);
-    free(Y);
-    free(X_old);
+    free(R); free(V); free(Z); free(Y); free(X_old);
 
     return norm;
 }

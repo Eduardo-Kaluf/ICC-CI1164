@@ -5,6 +5,8 @@
 
 // Valor absoluto de um número. Alternativa ao uso da função 'fabs()'
 #define ABS(num)  ((num) < 0.0 ? -(num) : (num))
+// Quantidade de inputs que serão lidos
+#define N_INPUTS 5
 
 // real_t: tipo usado para representar valores em ponto flutuante
 typedef double real_t;
@@ -41,20 +43,76 @@ rtime_t timestamp(void);
  */
 string_t markerName(string_t baseName, int n);
 
+/**
+ * @brief Realiza a leitura dos inputs base do programa
+ *
+ * @param n Dimensão das matrizes e tamanho dos vetores do programa
+ * @param k Número de diagonais da matriz
+ * @param w Seletor do pré-condicionador
+ * @param maxit Número máximo de iterações
+ * @param epsilon Erro aproximado absoluto máximo
+ */
 void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon);
 
-void fill_zeros_vector(real_t *v, int n);
 
-real_t dot_product(real_t *v1, real_t *v2, int n);
-
-void print_vector(real_t *v, int n);
-
+/**
+ * @brief Aloca vetores necessários para o programa
+ *
+ * @param X Vetor Solução
+ * @param B Vetor de termos independentes
+ * @param BSP Vetor B após modificação para matriz simétrica e positiva
+ * @param n Tamanho dos vetores
+ */
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
 
+
+/**
+ * @brief Aloca matrizes necessários para o programa
+ *
+ * @param A Matriz principal
+ * @param ASP Matriz principal após modificação para matriz simétrica e positiva
+ * @param M Matriz do pré-condicionador
+ * @param D Diagonal da matriz principal
+ * @param L Parte inferior da matriz principal
+ * @param U Parte superior da matriz principal
+ * @param n Dimensão das matrizes
+ */
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
 
+/**
+ * @brief Exibe os resultados do programa
+ *
+ * @param n Tamanho do vetor
+ * @param X Vetor solução
+ * @param norm Norma máxima do erro aproximado em x após última iteração
+ * @param residuo Norma euclidiana do resíduo
+ * @param time_pc Tempo do pré-condicionador
+ * @param time_iter Tempo médio de uma iteração do método
+ * @param time_residuo Tempo para calcular a norma euclidiana do resíduo
+ */
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo);
 
-void free_all_memory(real_t *X, real_t *B, real_t *BSP, real_t **A, real_t **ASP, real_t **M, real_t **D, real_t **L, real_t **U, int n);
+/**
+ * @brief Libera a memória das matrizes e vetores alocados de maneira segura
+ *
+ * @param X Vetor solução
+ * @param B Vetor de termos independentes
+ * @param BSP Vetor B após modificação para matriz simétrica e positiva
+ * @param A Matriz principal
+ * @param ASP Matriz principal após modificação para matriz simétrica e positiva
+ * @param M Matriz do pré-condicionador
+ * @param D Diagonal da matriz principal
+ * @param L Parte inferior da matriz principal
+ * @param U Parte superior da matriz principal
+ * @param n Dimensão das matrizes
+ */
+void free_all_memory(real_t **X, real_t **B, real_t **BSP, real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
+
+/**
+ * @brief Exibe uma mensagem de erro fatal e encerra o programa graciosamente
+ *
+ * @param message Mensagem de erro exibida ao usuário
+ */
+void handle_error(char *message) __attribute__((__noreturn__));
 
 #endif // __UTILS_H__

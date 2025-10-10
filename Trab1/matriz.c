@@ -3,28 +3,14 @@
 #include <stdio.h>
 
 #include "matriz.h"
+#include "vetor.h"
 
 
 void alloc_single_matrix(real_t ***m, int n) {
-    *m = calloc(n, sizeof(real_t *));
-    if (!(*m)) {
-        fprintf(stderr, "Failed malloc!\n");
-        return;
-    }
+    *m = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
 
-    for (int i = 0; i < n; ++i) {
-        (*m)[i] = calloc(n, sizeof(real_t));
-
-        if (!(*m)[i]) {
-            fprintf(stderr, "Failed malloc!\n");
-
-            for (int j = 0; j < i; j++)
-                free((*m)[j]);
-            free(*m);
-
-            return;
-        }
-    }
+    for (int i = 0; i < n; ++i)
+        (*m)[i] = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
 }
 
 void free_matrix(real_t **m, int n) {
@@ -78,13 +64,13 @@ void matrix_times_scalar(real_t **A, int n, real_t value, real_t **dest) {
     }
 }
 
-void matrix_times_vector(real_t **m, int n, real_t *v, real_t *rv) {
+void matrix_times_vector(real_t **A, int n, real_t *V, real_t *dest) {
 
-    fill_zeros_vector(rv, n);
+    fill_zeros_vector(dest, n);
 
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
-            rv[i] += m[i][j] * v[j];
+            dest[i] += A[i][j] * V[j];
 }
 
 void matrix_times_matrix(real_t **A, real_t **B, int n, real_t **C) {

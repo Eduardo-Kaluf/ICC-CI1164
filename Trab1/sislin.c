@@ -4,9 +4,10 @@
 #include <math.h>
 #include <time.h>
 
-#include "utils.h"
-#include "sislin.h"
 #include "matriz.h"
+#include "sislin.h"
+#include "utils.h"
+#include "vetor.h"
 
 
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k);
@@ -110,15 +111,18 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
 
     if (w == -1.0) {
         // Sem pré-condicionador
+
         for (int i = 0; i < n; i++)
             M[i][i] = 1.0;
     }
     else if (w == 0.0) {
-        for (int i = 0; i < n; i++) { // pré-condicionador de Jacobi
+        // Pré-condicionador de Jacobi
+
+        for (int i = 0; i < n; i++) {
             if (D[i][i] != 0)
                 M[i][i] = 1 / D[i][i];
             else
-                break; // RETORNAR ALGUM TIPO DE ERRO (DETERMINANTE DA MATRIZ É 0 E PORTANTO NÃO POSSUI INVERSA)
+                handle_error("Determinante da matriz é zero, impossível gerar pré-condicionador");
         }
     }
     else {
@@ -132,12 +136,11 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
 real_t calcResiduoSL(real_t **A, real_t *b, real_t *X, int n, int k, rtime_t *tempo) {
     *tempo = timestamp();
 
-    int b_size = n * sizeof(real_t);
     int band_size = k / 2;
     real_t norm = 0.0;
 
-    real_t *r = malloc(b_size);
-    memcpy(r, b, b_size);
+    real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    memcpy(r, b, n * sizeof(real_t));
 
     // Upper part of the matrix
     for (int i = 0; i < n; i++)

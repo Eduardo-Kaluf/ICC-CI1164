@@ -4,7 +4,7 @@ CFLAGS = -O0 -g
 LFLAGS = -lm
 
 PROG = cgSolver
-MODULES = utils gradiente_conjugado sislin matriz $(PROG)
+MODULES = utils gradiente_conjugado sislin matriz vetor $(PROG)
 OBJS = $(addsuffix .o,$(MODULES))
 SRCS = $(addsuffix .c,$(MODULES)) $(addsuffix .h,$(MODULES))
 
