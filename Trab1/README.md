@@ -63,3 +63,9 @@ A saída do programa segue o seguinte formato:
     Tempo PC: Tempo para calcular a matriz pré-condicionante M e preparar o SL para o uso do pré-condicionante. (ms)
     Tempo iter: Tempo médio para calcular uma iteração do método, inclusive o cálculo do erro. (ms)
     Tempo residuo: Tempo para calcular a norma euclidiana do resíduo ao final do processo. (ms)
+
+# Observações
+
+Implementamos os métodos de _Gauss-Seidel_ e _SSOR_ como um extra.
+
+O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação. 
