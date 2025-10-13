@@ -1,8 +1,10 @@
 #include <stdlib.h>
 
 #include "gradiente_conjugado.h"
+#include "matriz.h"
 #include "sislin.h"
 #include "utils.h"
+#include "vetor.h"
 
 
 int main() {

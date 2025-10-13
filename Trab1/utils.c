@@ -29,9 +29,9 @@ void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon) {
 }
 
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
-    *X   = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    *X   = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
     *B   = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
-    *BSP = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    *BSP = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
 }
 
 void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n) {
@@ -75,12 +75,7 @@ void free_all_memory(real_t **X, real_t **B, real_t **BSP, real_t ***A, real_t *
         *BSP = NULL;
     }
 
-    free_matrix(*A, n);
-    free_matrix(*ASP, n);
-    free_matrix(*M, n);
-    free_matrix(*D, n);
-    free_matrix(*L, n);
-    free_matrix(*U, n);
+    free_matrix(A, n); free_matrix(ASP, n); free_matrix(M, n); free_matrix(D, n); free_matrix(L, n); free_matrix(U, n);
 }
 
 void handle_error(char *message) {

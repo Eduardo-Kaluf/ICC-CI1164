@@ -6,7 +6,8 @@
 
 
 real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
-    int i;
+    if (!A || !B || !X || !M || !tempo)
+        handle_error("Tentativa de acesso a um ponteiro nulo");
 
     real_t *X_old = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
 
@@ -24,6 +25,8 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
     real_t *Z = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
 
     *tempo = timestamp();
+
+    int i;
     for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
 

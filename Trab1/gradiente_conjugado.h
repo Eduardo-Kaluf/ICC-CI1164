@@ -12,11 +12,11 @@
  * @param M Matriz inversa de pre condicionadores
  * @param n Quantidade de linhas e colunas
  * @param maxit Maximo de iterações
- * @param episilon Tolerancia da norma
+ * @param epsilon Tolerancia da norma
  * @param tempo Ponteiro para a varivel tempo 
  *              (guarda o tempo medio das iterações)
  * 
- * @return norma maxima 
+ * @return Norma maxima
  */
 real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo);
 
