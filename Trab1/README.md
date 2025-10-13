@@ -67,6 +67,6 @@ A saída do programa segue o seguinte formato:
 
 # Observações
 
-Implementamos os métodos de _Gauss-Seidel_ e _SSOR_ como um extra.
+- Implementamos os métodos de _Gauss-Seidel_ e _SSOR_ como um extra.
 
-O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação. 
+- O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação. 
