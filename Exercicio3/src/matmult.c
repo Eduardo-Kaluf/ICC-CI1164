@@ -3,8 +3,10 @@
 #include <string.h>
 #include <getopt.h>
 #include <time.h>
+#include <likwid.h>
 
 #include "matriz.h"
+#include "matriz_otimizada.h"
 
 /**
  * Exibe mensagem de erro indicando forma de uso do programa e termina
@@ -67,12 +69,22 @@ int main(int argc, char *argv[]) {
         printf ("=================================\n\n");
     #endif /* _DEBUG_ */
 
-    // TODO TODO TODO PUT LIKWID MARKERS HERE AND OPTIMAZED FUNCTIONS
-
+    // LIKWID_MARKER_START("multMatVet");
     multMatVet (mRow_1, vet, n, n, res);
-        
+    // LIKWID_MARKER_STOP("multMatVet");
+
+    // LIKWID_MARKER_START("multMatVetOtimizada");
+    multMatVetOtimizada(mRow_1, vet, n, n, res);
+    // LIKWID_MARKER_STOP("multMatVetOtimizada");
+
+    // LIKWID_MARKER_START("multMatMat");
     multMatMat (mRow_1, mRow_2, n, resMat);
-        
+    // LIKWID_MARKER_STOP("multMatMat");
+
+    // LIKWID_MARKER_START("multMatMatOtimizada");
+    multMatMatOtimizada(mRow_1, mRow_2, n, resMat);
+    // LIKWID_MARKER_STOP("multMatMatOtimizada");
+
     #ifdef _DEBUG_
         prnVetor (res, n);
         prnMat (resMat, n, n);

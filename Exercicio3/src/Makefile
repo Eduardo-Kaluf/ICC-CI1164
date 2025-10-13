@@ -1,6 +1,6 @@
 # PROGRAMA
         PROG = matmult
-        OBJS = $(PROG).o matriz.o
+        OBJS = $(PROG).o matriz.o matriz_otimizada.o
 
 # Compilador
            CC = gcc -Wall
