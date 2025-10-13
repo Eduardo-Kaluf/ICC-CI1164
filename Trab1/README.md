@@ -57,7 +57,8 @@ A entrada do programa deve seguir as seguintes regras:
 
 
 A saída do programa segue o seguinte formato:
-
+    n: Dimensão do Sistema Linear. (n > 10)
+    X: Vetor solução do Sistema Linear
     Norma: Norma máxima do erro aproximado em x após a última iteração (||x||∞ = max|xi - xi-1|);
     Resíduo: A norma euclidiana do resíduo (||r||L2), onde r= b - Ax
     Tempo PC: Tempo para calcular a matriz pré-condicionante M e preparar o SL para o uso do pré-condicionante. (ms)
