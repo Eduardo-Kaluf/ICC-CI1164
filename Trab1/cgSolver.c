@@ -18,6 +18,9 @@ int main() {
 
     read_input(&n, &k, &w, &maxit, &epsilon);
 
+    if (k > n)
+        handle_error("K não pode ser maior do que n");
+
     alloc_vectors(&X, &B, &BSP, n);
     alloc_matrixes(&A, &ASP, &M, &D, &L, &U, n);
 
