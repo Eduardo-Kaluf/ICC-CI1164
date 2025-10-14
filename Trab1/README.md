@@ -69,4 +69,6 @@ A saída do programa segue o seguinte formato:
 
 - Implementamos os métodos de _Gauss-Seidel_ e _SSOR_ como um extra.
 
-- O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação. 
+- O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação.
+
+- A norma do vetor de resíduo está sendo calculado com base na matriz A, porém é possível calcular a norma direto no método dos gradientes conjugados. Foi apenas uma decisão de implementação.

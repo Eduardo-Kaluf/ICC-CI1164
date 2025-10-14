@@ -37,7 +37,7 @@ int main() {
 
     real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, epsilon, &time_iter);
 
-    real_t residuo = calcResiduoSL(ASP, BSP, X, n, k, &time_residuo);
+    real_t residuo = calcResiduoSL(A, B, X, n, k, &time_residuo);
 
     rtime_t total_pc_time = time_pc + time_simetrica + time_dlu;
 
