@@ -23,7 +23,7 @@ do
     for n in $TAMANHOS
     do
 	LIKWID_OUT="${DATA_DIR}/${m}_${n}.txt"
-	
+
 	echo "--->>  $m: ./${PROG} $n" >/dev/tty
 	# Assume que programa 'matmult' imprime em stdout (via printf) os valores de tempo
 	# medidos para cada função com 5 colunas: N, t_matVet, t_matVet_otim, t_matMat, t_matmat_otim
@@ -34,8 +34,8 @@ do
     # Colocar aqui comando(s) que, a partir dos arquivos '.txt', gera (para cada métrica) um arquivo
     # CSV com 5 colunas:
     # N, metrica_matvet,metrica_matvet_otim, metrica_matmat, metrica_matmat_otim
-    # 
+    #
 done
 
-echo "powersave" > /sys/devices/system/cpu/cpufreq/policy${CPU}/scaling_governor 
+echo "powersave" > /sys/devices/system/cpu/cpufreq/policy${CPU}/scaling_governor
 
