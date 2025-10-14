@@ -44,9 +44,10 @@ void copy_matrix(real_t **A, real_t **dest, int n);
  * @brief Exibe a matriz na tela com format "%.16g"
  *
  * @param m Matriz
+ * @param B Vetor dos termos independentes
  * @param n Quantidade de linhas e colunas
  */
-void print_matrix(real_t **m, int n);
+void print_matrix(real_t **m, real_t *B, int n);
 
 /**
  * @brief Soma duas matrizes 

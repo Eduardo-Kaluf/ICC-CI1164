@@ -45,17 +45,17 @@ void copy_matrix(real_t **A, real_t **B, int n) {
         memcpy(B[i], A[i], n * sizeof(real_t));
 }
 
-void print_matrix(real_t **m, int n) {
-    if (!m)
+void print_matrix(real_t **m, real_t *B, int n) {
+    if (!m || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
     for (int i = 0; i < n; i++) {
-        printf("[ ");
-
         for (int j = 0; j < n; j++)
             printf("%.16g ", m[i][j]);
 
-        printf("]\n");
+        printf("%.16g", B[i]);
+
+        printf("\n");
     }
 
     printf("\n");

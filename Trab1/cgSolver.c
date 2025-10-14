@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "gradiente_conjugado.h"
 #include "matriz.h"
@@ -38,6 +39,12 @@ int main() {
     rtime_t total_pc_time = time_pc + time_simetrica + time_dlu;
 
     print_results(n, X, norm, residuo, total_pc_time, time_iter, time_residuo);
+
+    #ifdef _DEBUG_
+        printf("\n");
+        print_vector(X, n);
+        print_matrix(A, B, n);
+    #endif
 
     free_all_memory(&X, &B, &BSP, &A, &ASP, &M, &D, &L, &U, n);
 

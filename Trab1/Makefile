@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -O0 -g
+CFLAGS = -O0
 LFLAGS = -lm
 
 PROG = cgSolver
@@ -12,10 +12,12 @@ SRCS = $(addsuffix .c,$(MODULES)) $(addsuffix .h,$(MODULES))
 DISTFILES = *.c *.h Makefile README.md
 DISTDIR = ek24-sssaf24
 
-# Adicionado 'test' à lista de alvos que não geram arquivos
-.PHONY: clean purge dist all test
+.PHONY: clean purge dist all debug
 
 all: $(PROG)
+
+debug:	CFLAGS += -g -D_DEBUG_
+debug:	$(PROG)
 
 %.o: %.c %.h utils.h
 	$(CC) -c $(CFLAGS) $<
