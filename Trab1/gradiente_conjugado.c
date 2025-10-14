@@ -26,6 +26,7 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
     *tempo = timestamp();
 
+    real_t norm;
     int i;
     for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
@@ -38,7 +39,9 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
         matrix_times_vector(M, n, R, Y);
 
-        if (dot_product(R, R, n) < epsilon)
+        norm = calc_norm(X, X_old, n);
+
+        if (norm < epsilon)
             break;
 
         copy_vector(X_old, X, n);
@@ -55,8 +58,6 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
     // Média do tempo
     *tempo = (timestamp() - *tempo) / i;
-
-    real_t norm = calc_norm(X, X_old, n);
 
     free(R); free(V); free(Z); free(Y); free(X_old);
 
