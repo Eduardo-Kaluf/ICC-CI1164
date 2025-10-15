@@ -7,6 +7,7 @@
 
 #include "matriz.h"
 #include "matriz_otimizada.h"
+#include "utils.h"
 
 /**
  * Exibe mensagem de erro indicando forma de uso do programa e termina
@@ -28,6 +29,9 @@ static void usage(char *progname) {
  */
 
 int main(int argc, char *argv[]) {
+    
+    LIKWID_MARKER_INIT;
+
     int n=DEF_SIZE;
     
     MatRow mRow_1, mRow_2, resMat;
@@ -69,33 +73,62 @@ int main(int argc, char *argv[]) {
         printf ("=================================\n\n");
     #endif /* _DEBUG_ */
 
-    // LIKWID_MARKER_START("multMatVet");
+    rtime_t t_mat_vet = timestamp();
+
+    LIKWID_MARKER_START("multMatVet");
+
     multMatVet (mRow_1, vet, n, n, res);
-    // LIKWID_MARKER_STOP("multMatVet");
+    
+    LIKWID_MARKER_STOP("multMatVet");
 
-    // LIKWID_MARKER_START("multMatVetOtimizada");
+    t_mat_vet = timestamp() - t_mat_vet;
+
+    
+    rtime_t t_mat_vet_otimizado = timestamp();
+
+    LIKWID_MARKER_START("multMatVetOtimizada");
+    
     multMatVetOtimizada(mRow_1, vet, n, n, res);
-    // LIKWID_MARKER_STOP("multMatVetOtimizada");
+    
+    LIKWID_MARKER_STOP("multMatVetOtimizada");
 
-    // LIKWID_MARKER_START("multMatMat");
+    t_mat_vet_otimizado = timestamp() - t_mat_vet_otimizado;
+
+    rtime_t t_mat_mat = timestamp();
+
+    LIKWID_MARKER_START("multMatMat");
+    
     multMatMat (mRow_1, mRow_2, n, resMat);
-    // LIKWID_MARKER_STOP("multMatMat");
+    
+    LIKWID_MARKER_STOP("multMatMat");
+    
+    t_mat_mat = timestamp() - t_mat_mat;
+    
+    rtime_t t_mat_mat_otimizado = timestamp();
 
-    // LIKWID_MARKER_START("multMatMatOtimizada");
+    LIKWID_MARKER_START("multMatMatOtimizada");
+    
     multMatMatOtimizada(mRow_1, mRow_2, n, resMat);
-    // LIKWID_MARKER_STOP("multMatMatOtimizada");
+    
+    LIKWID_MARKER_STOP("multMatMatOtimizada");
 
+    t_mat_mat_otimizado = timestamp() - t_mat_mat_otimizado;
+    
     #ifdef _DEBUG_
         prnVetor (res, n);
         prnMat (resMat, n, n);
     #endif /* _DEBUG_ */
+
+    printf("%d, %.8g, %.8g, %.8g, %.8g\n", n, t_mat_vet, t_mat_vet_otimizado, t_mat_mat, t_mat_mat_otimizado);
 
     liberaVetor ((void*) mRow_1);
     liberaVetor ((void*) mRow_2);
     liberaVetor ((void*) resMat);
     liberaVetor ((void*) vet);
     liberaVetor ((void*) res);
-
+	
+    LIKWID_MARKER_CLOSE;
+    
     return 0;
 }
 

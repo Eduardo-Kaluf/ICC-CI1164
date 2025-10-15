@@ -1,12 +1,12 @@
 # PROGRAMA
         PROG = matmult
-        OBJS = $(PROG).o matriz.o matriz_otimizada.o
+        OBJS = $(PROG).o matriz.o matriz_otimizada.o utils.o
 
 # Compilador
            CC = gcc -Wall
 
-       CFLAGS =  
-       LFLAGS = -lm
+    CFLAGS = -O0 -g -DLIKWID_PERFMON -I${LIKWID_INCLUDE} -DLIKWID_TEST
+    LFLAGS = -lm -L${LIKWID_LIB} -llikwid
 
 # Lista de arquivos para distribuição
 DISTFILES = *.c *.h README.md Makefile perfctr
