@@ -1,0 +1,79 @@
+#include <math.h>
+
+#include "gradiente_conjugado.h"
+#include "matriz.h"
+#include "vetor.h"
+
+
+real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
+    if (!A || !B || !X || !M || !tempo)
+        handle_error("Tentativa de acesso a um ponteiro nulo");
+
+    real_t *X_old = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
+
+    real_t *R = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    copy_vector(R, B, n);
+
+    real_t *V = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    matrix_times_vector(M, n, B, V);
+
+    real_t *Y = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    matrix_times_vector(M, n, R, Y);
+
+    real_t aux = dot_product(Y, R, n);
+
+    real_t *Z = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+
+    *tempo = timestamp();
+
+    real_t norm;
+    int i;
+    // TODO TODO TODO OPTIMAZE THIS
+    for (i = 0; i < maxit; i++) {
+        matrix_times_vector(A, n, V, Z);
+
+        real_t s = aux / dot_product(V, Z, n);
+
+        sum_vector_times_scalar(V, n, s, X);
+
+        sum_vector_times_scalar(Z, n, -s, R);
+
+        matrix_times_vector(M, n, R, Y);
+
+        norm = calc_norm(X, X_old, n);
+
+        if (norm < epsilon)
+            break;
+
+        copy_vector(X_old, X, n);
+
+        real_t aux1 = dot_product(Y, R, n);
+
+        real_t m = aux1 / aux;
+
+        aux = aux1;
+
+        for (int j = 0; j < n; j++)
+            V[j] = Y[j] + m * V[j];
+    }
+
+    // Média do tempo
+    *tempo = (timestamp() - *tempo) / i;
+
+    free(R); free(V); free(Z); free(Y); free(X_old);
+
+    return norm;
+}
+
+real_t calc_norm(real_t *X, real_t *X_old, int n) {
+    real_t norm_max = 0.0;
+
+    for (int i = 0; i < n; i++) {
+        real_t current_norm = fabs(X_old[i] - X[i]);
+
+        if (current_norm > norm_max)
+            norm_max = current_norm;
+    }
+
+    return norm_max;
+}
