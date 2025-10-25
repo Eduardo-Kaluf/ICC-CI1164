@@ -10,7 +10,7 @@ void alloc_single_matrix(real_t ***m, int n) {
     *m = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
 
     for (int i = 0; i < n; ++i)
-        (*m)[i] = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
+        (*m)[i] = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
 }
 
 void free_matrix(real_t ***m, int n) {
