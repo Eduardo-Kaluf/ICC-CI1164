@@ -46,22 +46,20 @@ void copy_matrix(real_t **A, real_t **B, int n) {
         memcpy(B[i], A[i], n * sizeof(real_t));
 }
 
-void print_matrix(real_t **m, real_t *B, int n, int k) {
+void print_matrix(real_t *m, real_t *B, int n, int k) {
     if (!m || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    int band_width = k / 2;
-
     for (int i = 0; i < n; i++) {
-        int j_start = max(0, i - band_width);
-
-        int j_end = min(n - 1, i + band_width);
-
-        for (int j = j_start; j <= j_end; j++)
-            printf("%.16g ", m[i][j]);
+        for (int j = 0; j < k; j++)
+            printf("%25.16g ", m[i * k + j]);
 
         printf("\n");
     }
+
+    printf("\n");
+
+    print_vector(B, n);
 }
 
 void sum_matrix(real_t **A, real_t **B, int n, real_t **C) {

@@ -24,18 +24,17 @@ int main() {
     alloc_vectors(&X, &B, &BSP, n);
     alloc_matrixes(&A, &ASP, &M, &D, &L, &U, n);
 
-    int band_width = k / 2;
 
-    real_t *MATRIX = alloc_single_vector(USE_CALLOC, sizeof(real_t), k * (n - 2 * band_width) + 3 * band_width * band_width + band_width);
+    real_t *MATRIX = alloc_single_vector(USE_CALLOC, sizeof(real_t), k * n);
 
     // ----------------------------------------- //
 
     criaKDiagonal(n, k, MATRIX, B);
 
-    print_vector(MATRIX, k * (n - 2 * band_width) + 3 * band_width * band_width + band_width);
+    print_matrix(MATRIX, B, n, k);
 
-    // genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
-    //
+    genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
+
     // if (w >= 0.0)
     //     geraDLU(ASP, n, k, D, L, U, &time_dlu);
     //

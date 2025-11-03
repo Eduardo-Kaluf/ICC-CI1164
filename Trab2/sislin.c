@@ -42,14 +42,15 @@ void criaKDiagonal(int n, int k, real_t *A, real_t *B) {
 
     int band_width = k / 2;
 
-    int counter = 0;
-
     for (int i = 0; i < n; i++) {
+        int counter = i < band_width ? band_width - i : 0;
+
         for (int j = max(0, i - band_width); j <= min(n - 1, i + band_width); j++) {
-            A[counter] = generateRandomA(i, j, k);
+            A[i * k + counter] = generateRandomA(i, j, k);
             counter++;
         }
     }
+
 
     for (int i = 0; i < n; i++)
         B[i] = generateRandomB(k);

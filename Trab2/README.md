@@ -72,3 +72,11 @@ A saída do programa segue o seguinte formato:
 - O tempo PC, tempo de calculo da matriz pré-condionante M, leva em conta o tempo de calcular a inversa devido à nossa lógica de implementação.
 
 - A norma do vetor de resíduo está sendo calculado com base na matriz A, porém é possível calcular a norma direto no método dos gradientes conjugados. Foi apenas uma decisão de implementação.
+
+# Perguntas 
+
+K será fixo = 7?
+
+SSOR deve ser implementado? Ou focamos apenas no jacobi?
+
+Falar sobre a maneira que estamos guardando a matrix
