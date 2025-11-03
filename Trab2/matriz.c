@@ -6,6 +6,14 @@
 #include "vetor.h"
 
 
+static inline int max (int a, int b) {
+    return (a > b) ? a : b;
+}
+
+static inline  int min (int a, int b) {
+    return (a < b) ? a : b;
+}
+
 void alloc_single_matrix(real_t ***m, int n) {
     *m = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
 
@@ -45,20 +53,22 @@ void copy_matrix(real_t **A, real_t **B, int n) {
         memcpy(B[i], A[i], n * sizeof(real_t));
 }
 
-void print_matrix(real_t **m, real_t *B, int n) {
+void print_matrix(real_t **m, real_t *B, int n, int k) {
     if (!m || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++)
-            printf("%.16g ", m[i][j]);
+    int band_width = k / 2;
 
-        printf("%.16g", B[i]);
+    for (int i = 0; i < n; i++) {
+        int j_start = max(0, i - band_width);
+
+        int j_end = min(n - 1, i + band_width);
+
+        for (int j = j_start; j <= j_end; j++)
+            printf("%.16g ", m[i][j]);
 
         printf("\n");
     }
-
-    printf("\n");
 }
 
 void sum_matrix(real_t **A, real_t **B, int n, real_t **C) {

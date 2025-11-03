@@ -46,8 +46,9 @@ void copy_matrix(real_t **A, real_t **dest, int n);
  * @param m Matriz
  * @param B Vetor dos termos independentes
  * @param n Quantidade de linhas e colunas
+ * @param k Quantidade de diagonais
  */
-void print_matrix(real_t **m, real_t *B, int n);
+void print_matrix(real_t **m, real_t *B, int n, int k);
 
 /**
  * @brief Soma duas matrizes 
