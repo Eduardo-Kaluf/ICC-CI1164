@@ -149,7 +149,7 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
 }
 
 // TODO TODO TODO OPTIMAZE THIS
-real_t calcResiduoSL(real_t **A, real_t *B, real_t *X, int n, int k, rtime_t *tempo) {
+real_t calcResiduoSL(real_t *A, real_t *B, real_t *X, int n, int k, rtime_t *tempo) {
     if (!A || !B || !X || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -159,21 +159,32 @@ real_t calcResiduoSL(real_t **A, real_t *B, real_t *X, int n, int k, rtime_t *te
     real_t norm = 0.0;
 
     real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
-    memcpy(r, B, n * sizeof(real_t));
+    copy_vector(r, B, n);
 
-    // Upper part of the matrix
-    for (int i = 0; i < n; i++)
-        for (int j = i + 1; j <= band_size + i && j < n; j++)
-            r[i] -= A[i][j] * X[j];
 
-    // Lower part of the matrix
+    // 
     for (int i = 0; i < n; i++)
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            r[i] -= A[i][j] * X[j];
+        for(int j = 0; j < band_size; j++)
+            r[i] -= A[i + (j * n)] * X[j];
+
+    // // Lower part of the matrix
+    // for (int i = 0; i < n; i++)
+    //     for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+    //         r[i] -= A[i][j] * X[j];
 
     // Diagonal
     for (int i = 0; i < n; i++)
-        r[i] -= A[i][i] * X[i];
+        r[i] -= A[i + (n * band_size)] * X[i];
+
+
+    //i is the row and j the line 
+    for (int i = 0; i < n; i++)
+        for(int j = 0; j < band_size; j++)
+            r[i] -= A[(n * (band_size + 1)) + i + (j * n)] * X[j];
+    // // Upper part of the matrix
+    // for (int i = 0; i < n; i++)
+    //     for (int j = i + 1; j <= band_size + i && j < n; j++)
+    //         r[i] -= A[i][j] * X[j];
 
     for (int i = 0; i < n; i++)
         norm += r[i] * r[i];

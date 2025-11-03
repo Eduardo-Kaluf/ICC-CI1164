@@ -67,7 +67,7 @@ void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, rea
  * 
  * @return Residuo
  */
-real_t calcResiduoSL(real_t **A, real_t *B, real_t *X, int n, int k, rtime_t *tempo);
+real_t calcResiduoSL (real_t *A, real_t *B, real_t *X, int n, int k, rtime_t *tempo);
 
 /**
  * @brief Calcula a matriz inversa de pré-condicionadores do metodo
