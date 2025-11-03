@@ -35,22 +35,41 @@ static inline real_t generateRandomB(unsigned int k ) {
     return (real_t)(k<<2) * (real_t)random() * invRandMax;
 }
 
+struct crs * alloc_crs (int n, int k){
+    struct crs *A = malloc(sizeof(struct crs));
+
+    A->values = malloc(n * k * sizeof(real_t));
+    A->col_ind = malloc(n * k * sizeof(int));
+    A->row_ptr = malloc((n + 1) * sizeof(int));
+
+    A->n = n;
+
+    return A;
+}
+
+
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
-void criaKDiagonal(int n, int k, real_t *A, real_t *B) {
+void criaKDiagonal(int n, int k, crs *A, real_t *B) {
     if (!A || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
     int band_width = k / 2;
+    A->row_ptr[0] = 0;
 
     for (int i = 0; i < n; i++) {
         int counter = i < band_width ? band_width - i : 0;
 
-        for (int j = max(0, i - band_width); j <= min(n - 1, i + band_width); j++) {
-            A[i * k + counter] = generateRandomA(i, j, k);
+        int j;
+        for (j = max(0, i - band_width); j <= min(n - 1, i + band_width); j++) {
+            A->values[i * k + counter] = generateRandomA(i, j, k);
+        
+            A->col_ind[i * k + counter] = j;
+            
             counter++;
         }
-    }
+        A->row_ptr[i + 1] = A->row_ptr[i] + j; 
 
+    }
 
     for (int i = 0; i < n; i++)
         B[i] = generateRandomB(k);
