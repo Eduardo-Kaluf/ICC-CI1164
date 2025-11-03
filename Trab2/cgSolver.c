@@ -25,15 +25,15 @@ int main() {
     alloc_matrixes(&A, &ASP, &M, &D, &L, &U, n);
 
 
-    real_t *MATRIX = alloc_single_vector(USE_CALLOC, sizeof(real_t), k * n);
+    crs *CV = alloc_crs(n, k);
 
     // ----------------------------------------- //
 
-    criaKDiagonal(n, k, MATRIX, B);
+    criaKDiagonal(n, k, CV, B);
 
-    print_matrix(MATRIX, B, n, k);
+    print_matrix(CV->values, B, n, k);
 
-    genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
+    // genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
 
     // if (w >= 0.0)
     //     geraDLU(ASP, n, k, D, L, U, &time_dlu);
