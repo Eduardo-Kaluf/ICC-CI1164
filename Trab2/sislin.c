@@ -96,7 +96,7 @@ void genSimetricaPositiva(real_t **A, real_t *B, int n, int k, real_t **ASP, rea
     *tempo = timestamp() - *tempo;
 }
 
-void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo) {
+void geraDLU(real_t *A, int n, int k, real_t *D, real_t *L, real_t *U, rtime_t *tempo) {
     if (!A || !D || !L || !U || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -104,16 +104,15 @@ void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime
 
     int band_size = k / 2;
 
-    for (int i = 0; i < n; i++)
-        for (int j = i + 1; j <= band_size + i && j < n; j++)
-            U[i][j] = A[i][j];
+
+    for (int i = 0; i < n * band_size; i++)
+        L[i] = A[i];
 
     for (int i = 0; i < n; i++)
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            L[i][j] = A[i][j];
-
-    for (int i = 0; i < n; i++)
-        D[i][i] = A[i][i];
+        D[i]= A[i + n * band_size];
+    
+    for (int i = 0; i < n * band_size; i++)
+            U[i] = A[n * (band_size + 1) + i];
 
     *tempo = timestamp() - *tempo;
 }

@@ -37,7 +37,7 @@ void genSimetricaPositiva(real_t **A, real_t *B, int n, int k, real_t **ASP, rea
  * @param U Matriz triangular superior
  * @param tempo Ponteiro para variavel tempo
  */
-void geraDLU(real_t **A, int n, int k, real_t **D, real_t **L, real_t **U, rtime_t *tempo);
+void geraDLU (real_t *A, int n, int k, real_t *D, real_t *L, real_t *U, rtime_t *tempo);
 
 /**
  * @brief Gera a matriz inversa de pre-condicionadores
