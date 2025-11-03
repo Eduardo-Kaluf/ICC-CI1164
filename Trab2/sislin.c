@@ -35,8 +35,8 @@ static inline real_t generateRandomB(unsigned int k ) {
     return (real_t)(k<<2) * (real_t)random() * invRandMax;
 }
 
-struct crs * alloc_crs (int n, int k){
-    struct crs *A = malloc(sizeof(struct crs));
+struct csr * alloc_csr (int n, int k){
+    struct csr *A = malloc(sizeof(struct csr));
 
     A->values = malloc(n * k * sizeof(real_t));
     A->col_ind = malloc(n * k * sizeof(int));
@@ -49,7 +49,7 @@ struct crs * alloc_crs (int n, int k){
 
 
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
-void criaKDiagonal(int n, int k, crs *A, real_t *B) {
+void criaKDiagonal(int n, int k, csr *A, real_t *B) {
     if (!A || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 

@@ -3,14 +3,14 @@
 
 #include "utils.h"
 
-typedef struct crs {
+typedef struct csr {
     real_t * values; 
     int *col_ind; 
     int *row_ptr;
     int n;
-} crs; 
+} csr; 
 
-struct crs *alloc_crs (int n, int k);
+struct csr *alloc_csr (int n, int k);
 
 /**
  * @brief Cria matriz 'A' k-diagonal (guardando-a em um vetor) e Termos independentes B
@@ -20,7 +20,7 @@ struct crs *alloc_crs (int n, int k);
  * @param B Vetor de termos independentes 
  * @param k Quantidade de diagonais 
  */
-void criaKDiagonal(int n, int k, crs *A, real_t *B);
+void criaKDiagonal(int n, int k, csr *A, real_t *B);
 
 /**
  * @brief Gera matriz simetrica positiva 
