@@ -36,24 +36,23 @@ static inline real_t generateRandomB(unsigned int k ) {
 }
 
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
-void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
+void criaKDiagonal(int n, int k, real_t *A, real_t *B) {
     if (!A || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    int band_size = k / 2;
+    int band_width = k / 2;
 
-    for (int i = 0; i < n; i++)
-        for (int j = i + 1; j <= band_size + i && j < n; j++)
-            A[i][j] = generateRandomA(i, j, k);
-
-    for (int i = 0; i < n; i++)
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            A[i][j] = generateRandomA(i, j, k);
+    int counter = 0;
 
     for (int i = 0; i < n; i++) {
-        A[i][i] = generateRandomA(i, i, k);
-        B[i] = generateRandomB(k);
+        for (int j = max(0, i - band_width); j <= min(n - 1, i + band_width); j++) {
+            A[counter] = generateRandomA(i, j, k);
+            counter++;
+        }
     }
+
+    for (int i = 0; i < n; i++)
+        B[i] = generateRandomB(k);
 }
 
 /* Gera matriz simetrica positiva */

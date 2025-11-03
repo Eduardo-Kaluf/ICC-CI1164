@@ -28,6 +28,8 @@ int main() {
 
     criaKDiagonal(n, k, A, B);
 
+    print_matrix(A, B, n);
+
     genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
 
     if (w >= 0.0)

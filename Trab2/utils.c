@@ -9,6 +9,14 @@
 #include "vetor.h"
 
 
+int max (int a, int b) {
+    return (a > b) ? a : b;
+}
+
+int min (int a, int b) {
+    return (a < b) ? a : b;
+}
+
 rtime_t timestamp(void) {
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC_RAW, &tp);

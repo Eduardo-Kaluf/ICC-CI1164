@@ -4,15 +4,8 @@
 
 #include "matriz.h"
 #include "vetor.h"
+#include "utils.h"
 
-
-static inline int max (int a, int b) {
-    return (a > b) ? a : b;
-}
-
-static inline  int min (int a, int b) {
-    return (a < b) ? a : b;
-}
 
 void alloc_single_matrix(real_t ***m, int n) {
     *m = alloc_single_vector(USE_CALLOC, sizeof(real_t *), n);
