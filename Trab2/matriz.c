@@ -4,6 +4,7 @@
 
 #include "matriz.h"
 #include "vetor.h"
+#include "utils.h"
 
 
 void alloc_single_matrix(real_t ***m, int n) {
@@ -45,20 +46,20 @@ void copy_matrix(real_t **A, real_t **B, int n) {
         memcpy(B[i], A[i], n * sizeof(real_t));
 }
 
-void print_matrix(real_t **m, real_t *B, int n) {
+void print_matrix(real_t *m, real_t *B, int n, int k) {
     if (!m || !B)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++)
-            printf("%.16g ", m[i][j]);
-
-        printf("%.16g", B[i]);
+        for (int j = 0; j < k; j++)
+            printf("%25.16g ", m[i * k + j]);
 
         printf("\n");
     }
 
     printf("\n");
+
+    print_vector(B, n);
 }
 
 void sum_matrix(real_t **A, real_t **B, int n, real_t **C) {
