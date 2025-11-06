@@ -7,7 +7,7 @@
 
 #include <likwid.h>
 
-#include "utils.h"
+#include "./utils.h"
 
 #define UNROLL_FACTOR 4
 
@@ -78,7 +78,6 @@ void montaSL(double **A, double *b, int n, long long int p, double *x, double *y
   }
 }
 
-// TODO TODO TODO OPTIMAZE THIS ONE
 void eliminacaoGauss(double **A, double *b, int n) {
   for (int i = 0; i < n; ++i) {
     int iMax = i;
