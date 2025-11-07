@@ -30,13 +30,13 @@ int main() {
 
     criaKDiagonal(C);
 
-    #ifdef _DEBUG_
-        print_csr(CT, STANDARD_MODE);
-        printf("\n\n");
-        print_csr(C, STANDARD_MODE);
-    #endif
-
     csr *C_SP = genSimetricaPositiva(C, &time_simetrica);
+
+    #ifdef _DEBUG_
+        print_csr(C, STANDARD_MODE);
+        printf("\n\n");
+        print_csr(C_SP, STANDARD_MODE);
+    #endif
 
     geraCondicionadorJacobi(C_SP, M, &time_pc);
 
