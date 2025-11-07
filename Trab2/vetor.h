@@ -10,15 +10,6 @@ enum ALLOC_TYPE {
 
 
 /**
- *
- *  @brief Preenche um vetor inteiro com zeros
- *
- *  @param v Ponteiro para o vetor
- *  @param n Tamanho do vetor
- */
-void fill_zeros_vector(real_t *v, int n);
-
-/**
  * @brief Retorna o valor do produto do produto escalar entre dois vetores
  *
  * @param v1 Ponteiro para o primeiro vetor

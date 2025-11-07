@@ -5,13 +5,6 @@
 #include "vetor.h"
 
 
-void fill_zeros_vector(real_t *v, int n) {
-    if (!v)
-        handle_error("Tentativa de acesso a um ponteiro nulo");
-
-    memset(v, 0, n * sizeof(real_t));
-}
-
 real_t dot_product(real_t *v1, real_t *v2, int n) {
     if (!v1 || !v2)
         handle_error("Tentativa de acesso a um ponteiro nulo");

@@ -1,19 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 #include <time.h>
 
-#include "matriz.h"
+#include "csr_matriz.h"
 #include "sislin.h"
-
-#include <float.h>
-
 #include "utils.h"
-#include "vetor.h"
 
 
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k);
+
 static inline real_t generateRandomB(unsigned int k);
 
 /**
@@ -35,259 +31,170 @@ static inline real_t generateRandomB(unsigned int k ) {
     return (real_t)(k<<2) * (real_t)random() * invRandMax;
 }
 
-struct csr * alloc_csr (int n, int k){
-    struct csr *A = malloc(sizeof(struct csr));
-
-    A->values = malloc(n * k * sizeof(real_t));
-    A->col_ind = malloc(n * k * sizeof(int));
-    A->row_ptr = malloc((n + 1) * sizeof(int));
-
-    A->n = n;
-
-    return A;
-}
-
 
 /* Cria matriz 'A' k-diagonal e Termos independentes B */
-void criaKDiagonal(int n, int k, csr *A, real_t *B) {
-    if (!A || !B)
+void criaKDiagonal(csr *c) {
+    if (!c || !c->values || !c->col_ind || !c->row_ptr)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    int band_width = k / 2;
-    A->row_ptr[0] = 0;
+    c->row_ptr[0] = 0;
 
-    for (int i = 0; i < n; i++) {
-        int counter = i < band_width ? band_width - i : 0;
+    int nnz_count = 0;
 
-        int j;
-        for (j = max(0, i - band_width); j <= min(n - 1, i + band_width); j++) {
-            A->values[i * k + counter] = generateRandomA(i, j, k);
-        
-            A->col_ind[i * k + counter] = j;
-            
-            counter++;
+    for (int i = 0; i < c->n; i++) {
+
+        for (int j = max(0, i - BAND_WIDTH); j <= min(c->n - 1, i + BAND_WIDTH); j++) {
+
+            c->values[nnz_count] = generateRandomA(i, j, K);
+            c->col_ind[nnz_count] = j;
+
+            nnz_count++;
         }
-        A->row_ptr[i + 1] = A->row_ptr[i] + j; 
 
+        c->row_ptr[i + 1] = nnz_count;
     }
 
-    for (int i = 0; i < n; i++)
-        B[i] = generateRandomB(k);
+    for (int i = 0; i < c->n; i++)
+        c->B[i] = generateRandomB(K);
+
 }
 
 /* Gera matriz simetrica positiva */
-void genSimetricaPositiva(real_t **A, real_t *B, int n, int k, real_t **ASP, real_t *bsp, rtime_t *tempo) {
-    if (!A || !B || !ASP || !bsp || !tempo)
+csr* genSimetricaPositiva(csr *c, rtime_t *tempo) {
+    if (!c || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
     *tempo = timestamp();
 
-    int band_size = k / 2;
+    csr *CT = csr_transpose(c);
 
-    // Calcula a matriz ASP (A^T * A), aproveitando a estrutura k-diagonal
+    const int n = CT->n;
+
+    const int nnz_capacity = n * SP_K - SP_OFF_SET;
+
+    csr *c_out = alloc_csr(n, nnz_capacity);
+
+    c_out->row_ptr[0] = 0;
+    c_out->n = n;
+    int counter = 0;
     for (int i = 0; i < n; i++) {
-        for (int j = i; j < n; j++) { // Itera apenas sobre a parte superior da matriz
-            ASP[i][j] = 0.0;
-            
-            // Define o intervalo de h onde A[h][i] e A[h][j] podem ser não nulos
-            int h_start = (int) fmax(0, fmax(i - band_size, j - band_size));
-            int h_end = (int) fmin(n, fmin(i + band_size + 1, j + band_size + 1));
+        const int row_start = CT->row_ptr[i];
+        const int row_end = CT->row_ptr[i+1];
 
-            for (int h = h_start; h < h_end; h++)
-                ASP[i][j] += A[h][i] * A[h][j];
+        c_out->row_ptr[i + 1] = c_out->row_ptr[i];
 
-            // Atribui o valor à parte inferior, por simetria
-            if (i != j)
-                ASP[j][i] = ASP[i][j];
+        for (int j = 0; j < n; j++) {
+            const int row_start2 = CT->row_ptr[j];
+            const int row_end2 = CT->row_ptr[j+1];
 
+            real_t sum = 0;
+            for (int h = row_start, l = row_start2; h < row_end && l < row_end2;) {
+                if (CT->col_ind[h] == CT->col_ind[l]) {
+                    sum += CT->values[h] * CT->values[l];
+                    l++;
+                    h++;
+                }
+                else if (CT->col_ind[h] > CT->col_ind[l])
+                    l++;
+                else
+                    h++;
+            }
+
+            if (sum != 0) {
+                c_out->row_ptr[i + 1] += 1;
+                c_out->values[counter] = sum;
+                c_out->col_ind[counter] = j;
+                counter++;
+            }
         }
     }
-    
-    // Multiplica pela transposta
-    for (int i = 0; i < n; i++) {
-        int j_start = (int) fmax(0, i - k);
-        int j_end = (int) fmin(n, i + k + 1);
 
-        for (int j = j_start; j < j_end; j++)
-            bsp[i] += A[j][i] * B[j];
-    }
+    csr_time_vector(CT, CT->B, c_out->B);
 
     *tempo = timestamp() - *tempo;
+
+    return c_out;
 }
 
-void geraDLU(real_t *A, int n, int k, real_t *D, real_t *L, real_t *U, rtime_t *tempo) {
-    if (!A || !D || !L || !U || !tempo)
+
+void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
+    if (!c || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
     *tempo = timestamp();
 
-    int band_size = k / 2;
+    // Pré-condicionador de Jacobi
+    for (int i = 0; i < c->n; i++) {
+        for (int j = c->row_ptr[i]; j < c->row_ptr[i + 1]; j++) {
 
+            if (c->col_ind[j] == i) {
 
-    for (int i = 0; i < n * band_size; i++)
-        L[i] = A[i];
+                const real_t diagonal_value = c->values[j];
 
-    for (int i = 0; i < n; i++)
-        D[i]= A[i + n * band_size];
-    
-    for (int i = 0; i < n * band_size; i++)
-            U[i] = A[n * (band_size + 1) + i];
+                printf("%f", diagonal_value);
 
-    *tempo = timestamp() - *tempo;
-}
+                if (diagonal_value != 0)
+                    M[i] = 1 / diagonal_value;
+                else
+                    handle_error("Determinante da matriz é zero, impossível gerar pré-condicionador");
 
-void geraPreCond(real_t **D, real_t **L, real_t **U, real_t w, int n, int k, real_t **M, rtime_t *tempo) {
-    if (!D || !L || !U || !M || !tempo)
-        handle_error("Tentativa de acesso a um ponteiro nulo");
-
-    *tempo = timestamp();
-
-    if (fabs(w + 1.0) < DBL_EPSILON) {
-        // Sem pré-condicionador
-
-        for (int i = 0; i < n; i++)
-            M[i][i] = 1.0;
-    }
-    else if (fabs(w) < DBL_EPSILON) {
-        // Pré-condicionador de Jacobi
-
-        for (int i = 0; i < n; i++) {
-            if (D[i][i] != 0)
-                M[i][i] = 1 / D[i][i];
-            else
-                handle_error("Determinante da matriz é zero, impossível gerar pré-condicionador");
+                break;
+            }
         }
-    }
-    else {
-        // pré-condicionador de Gauss-Seidel / pré-condicionador SSOR
-
-        ssor_Minv(L, U, D, n, w, M);
     }
 
     *tempo = timestamp() - *tempo;
 }
 
 // TODO TODO TODO OPTIMAZE THIS
-real_t calcResiduoSL(real_t *A, real_t *B, real_t *X, int n, int k, rtime_t *tempo) {
-    if (!A || !B || !X || !tempo)
+real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
+    if (!c || !X || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    *tempo = timestamp();
-
-    int band_size = k / 2;
-    real_t norm = 0.0;
-
-    real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
-    copy_vector(r, B, n);
-
-
-    // 
-    for (int i = 0; i < n; i++)
-        for(int j = 0; j < band_size; j++)
-            r[i] -= A[i + (j * n)] * X[j];
-
-    // // Lower part of the matrix
+    // *tempo = timestamp();
+    //
+    // int band_size = k / 2;
+    // real_t norm = 0.0;
+    //
+    // real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
+    // copy_vector(r, B, n);
+    //
+    //
+    // //
     // for (int i = 0; i < n; i++)
-    //     for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-    //         r[i] -= A[i][j] * X[j];
-
-    // Diagonal
-    for (int i = 0; i < n; i++)
-        r[i] -= A[i + (n * band_size)] * X[i];
-
-
-    //i is the row and j the line 
-    for (int i = 0; i < n; i++)
-        for(int j = 0; j < band_size; j++)
-            r[i] -= A[(n * (band_size + 1)) + i + (j * n)] * X[j];
-    // // Upper part of the matrix
+    //     for(int j = 0; j < band_size; j++)
+    //         r[i] -= A[i + (j * n)] * X[j];
+    //
+    // // // Lower part of the matrix
+    // // for (int i = 0; i < n; i++)
+    // //     for (int j = i - 1; j >= i - band_size && j >= 0; j--)
+    // //         r[i] -= A[i][j] * X[j];
+    //
+    // // Diagonal
     // for (int i = 0; i < n; i++)
-    //     for (int j = i + 1; j <= band_size + i && j < n; j++)
-    //         r[i] -= A[i][j] * X[j];
+    //     r[i] -= A[i + (n * band_size)] * X[i];
+    //
+    //
+    // //i is the row and j the line
+    // for (int i = 0; i < n; i++)
+    //     for(int j = 0; j < band_size; j++)
+    //         r[i] -= A[(n * (band_size + 1)) + i + (j * n)] * X[j];
+    // // // Upper part of the matrix
+    // // for (int i = 0; i < n; i++)
+    // //     for (int j = i + 1; j <= band_size + i && j < n; j++)
+    // //         r[i] -= A[i][j] * X[j];
+    //
+    // for (int i = 0; i < n; i++)
+    //     norm += r[i] * r[i];
+    //
+    // norm = sqrt(norm);
+    //
+    // free(r);
+    //
+    // *tempo = timestamp() - *tempo;
+    //
+    // return norm;
 
-    for (int i = 0; i < n; i++)
-        norm += r[i] * r[i];
-
-    norm = sqrt(norm);
-
-    free(r);
-
-    *tempo = timestamp() - *tempo;
-
-    return norm;
-}
-
-void invert_lower(real_t **L, real_t **L_inv, int n){
-    if (!L || !L_inv)
-        handle_error("Tentativa de acesso a um ponteiro nulo");
-
-    for (int i = 0; i < n; i++)
-        if (L[i][i] == 0)
-            handle_error("Determinante da matriz é zero, impossível gerar pré-condicionador");
-
-    for (int c = 0; c < n; ++c) {
-        for (int i = 0; i < n; ++i) {
-            real_t s = (i==c) ? 1.0 : 0.0;
-
-            for (int j = 0; j < i; ++j) 
-                s -= L[i][j] * L_inv[j][c];
-
-            L_inv[i][c] = s / L[i][i];
-        }
-    }
-}
-
-void invert_upper(real_t **U, real_t **U_inv, int n) {
-    if (!U || !U_inv)
-        handle_error("Tentativa de acesso a um ponteiro nulo");
-
-    for (int i = 0; i < n; i++)
-        if (U[i][i] == 0)
-            handle_error("Determinante da matriz é zero, impossível gerar pré-condicionador");
-
-    for (int c = 0; c < n; ++c) {
-        for (int i = n-1; i >= 0; --i) {
-            real_t s = (i==c) ? 1.0 : 0.0;
-
-            for (int j = i+1; j < n; ++j) 
-                s -= U[i][j] * U_inv[j][c];
-            
-            U_inv[i][c] = s / U[i][i];
-        }
-    }
-}
-
-void ssor_Minv(real_t **L, real_t **U, real_t **D, int n, real_t w, real_t **M_inv) {
-    if (!L || !U || !D || !M_inv)
-        handle_error("Tentativa de acesso a um ponteiro nulo");
-
-    real_t **AL, **AU;
-
-    alloc_single_matrix(&AL, n);
-    alloc_single_matrix(&AU, n);
-
-    copy_matrix(AL, L, n);
-    copy_matrix(AU, U, n);
-
-    matrix_times_scalar(AL, n, w, AL);
-    matrix_times_scalar(AU, n, w, AU);
-
-    sum_matrix(AL, D, n, AL);
-    sum_matrix(AU, D, n, AU);
-
-    // Calculando as inversas
-    real_t **AL_inv, **AU_inv;
-    alloc_single_matrix(&AL_inv, n);
-    alloc_single_matrix(&AU_inv, n);
-
-    invert_lower(AL, AL_inv, n);
-    invert_upper(AU, AU_inv, n);
-
-    real_t **temp;
-    alloc_single_matrix(&temp, n);
-
-    matrix_times_matrix(AU_inv, D, n, temp);
-    matrix_times_matrix(temp, AL_inv, n, M_inv);
-
-    free_matrix(&AL, n); free_matrix(&AU, n); free_matrix(&AL_inv, n); free_matrix(&AU_inv, n); free_matrix(&temp, n);
+    // MOCK
+    return 2.0;
 }

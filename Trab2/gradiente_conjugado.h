@@ -1,24 +1,21 @@
 #ifndef __GRADIENTE_CONJUGADO_H__
 #define __GRADIENTE_CONJUGADO_H__
 
+#include "csr_matriz.h"
 #include "utils.h"
+
 
 /**
  * @brief Calculo do metodo do gradiente conjulgado
  *
- * @param A Matriz transposta
- * @param B Vetor termos independentes 
+ * @param c Matriz k-diagonal guardada como CSR
  * @param X Vetor resultado do sistema
- * @param M Matriz inversa de pre condicionadores
- * @param n Quantidade de linhas e colunas
- * @param maxit Maximo de iterações
- * @param epsilon Tolerancia da norma
- * @param tempo Ponteiro para a varivel tempo 
- *              (guarda o tempo medio das iterações)
+ * @param M Matriz inversa do pre condicionador JACOBI
+ * @param tempo Ponteiro para a varivel tempo (guarda o tempo medio das iterações)
  * 
  * @return Norma maxima
  */
-real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo);
+real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) ;
 
 /**
  * @brief calcula a norma maxima

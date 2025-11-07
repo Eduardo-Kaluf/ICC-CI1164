@@ -30,6 +30,16 @@ int max (int a, int b);
 // TODO TODO TODO TRANSFORM INTO INLINE FUNCTION
 int min (int a, int b);
 
+#define K 7
+#define OFF_SET 12
+
+#define SP_K 13
+#define SP_OFF_SET 42
+
+#define BAND_WIDTH K / 2
+
+#define MAX_IT 25
+
 /**
  * @brief Retorna tempo em milisegundos desde EPOCH.
  *
@@ -48,40 +58,13 @@ rtime_t timestamp(void);
 string_t markerName(string_t baseName, int n);
 
 /**
- * @brief Realiza a leitura dos inputs base do programa
- *
- * @param n Dimensão das matrizes e tamanho dos vetores do programa
- * @param k Número de diagonais da matriz
- * @param w Seletor do pré-condicionador
- * @param maxit Número máximo de iterações
- * @param epsilon Erro aproximado absoluto máximo
- */
-void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon);
-
-
-/**
  * @brief Aloca vetores necessários para o programa
  *
  * @param X Vetor Solução
- * @param B Vetor de termos independentes
- * @param BSP Vetor B após modificação para matriz simétrica e positiva
+ * @param M Vetor pré-condicionador
  * @param n Tamanho dos vetores
  */
-void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n);
-
-
-/**
- * @brief Aloca matrizes necessários para o programa
- *
- * @param A Matriz principal
- * @param ASP Matriz principal após modificação para matriz simétrica e positiva
- * @param M Matriz do pré-condicionador
- * @param D Diagonal da matriz principal
- * @param L Parte inferior da matriz principal
- * @param U Parte superior da matriz principal
- * @param n Dimensão das matrizes
- */
-void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
+void alloc_vectors(real_t **X, real_t **M, int n);
 
 /**
  * @brief Exibe os resultados do programa
@@ -96,21 +79,6 @@ void alloc_matrixes(real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t
  */
 void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_pc, rtime_t time_iter, rtime_t time_residuo);
 
-/**
- * @brief Libera a memória das matrizes e vetores alocados de maneira segura
- *
- * @param X Vetor solução
- * @param B Vetor de termos independentes
- * @param BSP Vetor B após modificação para matriz simétrica e positiva
- * @param A Matriz principal
- * @param ASP Matriz principal após modificação para matriz simétrica e positiva
- * @param M Matriz do pré-condicionador
- * @param D Diagonal da matriz principal
- * @param L Parte inferior da matriz principal
- * @param U Parte superior da matriz principal
- * @param n Dimensão das matrizes
- */
-void free_all_memory(real_t **X, real_t **B, real_t **BSP, real_t ***A, real_t ***ASP, real_t ***M, real_t ***D, real_t ***L, real_t ***U, int n);
 
 /**
  * @brief Exibe uma mensagem de erro fatal e encerra o programa graciosamente
