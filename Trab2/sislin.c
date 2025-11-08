@@ -5,7 +5,11 @@
 
 #include "csr_matriz.h"
 #include "sislin.h"
+
+#include <string.h>
+
 #include "utils.h"
+#include "vetor.h"
 
 
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k);
@@ -116,7 +120,6 @@ csr* genSimetricaPositiva(csr *c, rtime_t *tempo) {
     return c_out;
 }
 
-
 void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
     if (!c || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
@@ -131,8 +134,6 @@ void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
 
                 const real_t diagonal_value = c->values[j];
 
-                printf("%f", diagonal_value);
-
                 if (diagonal_value != 0)
                     M[i] = 1 / diagonal_value;
                 else
@@ -146,55 +147,33 @@ void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
     *tempo = timestamp() - *tempo;
 }
 
-// TODO TODO TODO OPTIMAZE THIS
 real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
     if (!c || !X || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    // *tempo = timestamp();
-    //
-    // int band_size = k / 2;
-    // real_t norm = 0.0;
-    //
-    // real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
-    // copy_vector(r, B, n);
-    //
-    //
-    // //
-    // for (int i = 0; i < n; i++)
-    //     for(int j = 0; j < band_size; j++)
-    //         r[i] -= A[i + (j * n)] * X[j];
-    //
-    // // // Lower part of the matrix
-    // // for (int i = 0; i < n; i++)
-    // //     for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-    // //         r[i] -= A[i][j] * X[j];
-    //
-    // // Diagonal
-    // for (int i = 0; i < n; i++)
-    //     r[i] -= A[i + (n * band_size)] * X[i];
-    //
-    //
-    // //i is the row and j the line
-    // for (int i = 0; i < n; i++)
-    //     for(int j = 0; j < band_size; j++)
-    //         r[i] -= A[(n * (band_size + 1)) + i + (j * n)] * X[j];
-    // // // Upper part of the matrix
-    // // for (int i = 0; i < n; i++)
-    // //     for (int j = i + 1; j <= band_size + i && j < n; j++)
-    // //         r[i] -= A[i][j] * X[j];
-    //
-    // for (int i = 0; i < n; i++)
-    //     norm += r[i] * r[i];
-    //
-    // norm = sqrt(norm);
-    //
-    // free(r);
-    //
-    // *tempo = timestamp() - *tempo;
-    //
-    // return norm;
+    real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), c->n);
+    copy_vector(r, c->B, c->n);
 
-    // MOCK
-    return 2.0;
+    *tempo = timestamp();
+
+    for (int i = 0; i < c->n; i++) {
+        double sum = 0.0;
+
+        for (int k = c->row_ptr[i]; k < c->row_ptr[i+1]; k++)
+            sum += c->values[k] * X[ c->col_ind[k]];
+
+        r[i] -= sum;
+    }
+
+    real_t norm = 0.0;
+    for (int i = 0; i < c->n; i++)
+        norm += r[i] * r[i];
+
+    norm = sqrt(norm);
+
+    *tempo = timestamp() - *tempo;
+
+    free(r);
+
+    return norm;
 }

@@ -9,6 +9,8 @@ enum ALLOC_TYPE {
 };
 
 
+void jacobi_times_vector(real_t *M, real_t *X, real_t *V, int n);
+
 /**
  * @brief Retorna o valor do produto do produto escalar entre dois vetores
  *

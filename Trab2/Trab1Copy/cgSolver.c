@@ -11,12 +11,18 @@
 int main() {
     srandom(20252);
 
-    int n, k, maxit;
-    real_t w, epsilon;
+    rtime_t total_time = timestamp();
+
+    printf("Trab1 - Standard \n");
+
+    int n;
     real_t *X, *B, *BSP, **A, **ASP, **M, **D, **L, **U;
     rtime_t time_pc, time_simetrica, time_iter, time_residuo, time_dlu = 0.0;
 
-    read_input(&n, &k, &w, &maxit, &epsilon);
+    scanf("%d", &n);
+    int k = K;
+    int maxit = MAX_IT;
+    real_t w = W;
 
     if (k > n)
         handle_error("K não pode ser maior do que n");
@@ -28,7 +34,11 @@ int main() {
 
     criaKDiagonal(n, k, A, B);
 
-    print_matrix(A, B, n);
+    #ifdef _DEBUG_
+        print_matrix(A, B, n);
+        print_vector(B, n);
+        printf("\n");
+    #endif
 
     genSimetricaPositiva(A, B, n, k, ASP, BSP, &time_simetrica);
 
@@ -37,7 +47,7 @@ int main() {
 
     geraPreCond(D, L, U, w, n, k, M, &time_pc);
 
-    real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, epsilon, &time_iter);
+    real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, &time_iter);
 
     real_t residuo = calcResiduoSL(A, B, X, n, k, &time_residuo);
 
@@ -45,13 +55,9 @@ int main() {
 
     print_results(n, X, norm, residuo, total_pc_time, time_iter, time_residuo);
 
-    #ifdef _DEBUG_
-        printf("\n");
-        print_vector(X, n);
-        print_matrix(A, B, n);
-    #endif
-
     free_all_memory(&X, &B, &BSP, &A, &ASP, &M, &D, &L, &U, n);
+
+    printf("\nTotal Time %f\n", timestamp() - total_time);
 
     return 0;
 }

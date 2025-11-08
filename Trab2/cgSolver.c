@@ -10,6 +10,10 @@
 int main() {
     srandom(20252);
 
+    rtime_t total_time = timestamp();
+
+    printf("Trab2 - Optimazed \n");
+
     int n;
 
     scanf("%d", &n);
@@ -30,13 +34,11 @@ int main() {
 
     criaKDiagonal(C);
 
-    csr *C_SP = genSimetricaPositiva(C, &time_simetrica);
-
     #ifdef _DEBUG_
         print_csr(C, STANDARD_MODE);
-        printf("\n\n");
-        print_csr(C_SP, STANDARD_MODE);
     #endif
+
+    csr *C_SP = genSimetricaPositiva(C, &time_simetrica);
 
     geraCondicionadorJacobi(C_SP, M, &time_pc);
 
@@ -47,6 +49,8 @@ int main() {
     print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
 
     free(X); free(M);
+
+    printf("\nTotal Time %f\n",  timestamp() - total_time);
 
     return 0;
 }

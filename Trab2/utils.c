@@ -40,7 +40,9 @@ void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_p
 
     printf("%d\n", n);
 
-    print_vector(X, n);
+    #ifdef _DEBUG_
+        print_vector(X, n);
+    #endif
 
     printf("%.8g\n"
                  "%.16g\n"

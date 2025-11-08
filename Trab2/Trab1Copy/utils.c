@@ -23,11 +23,6 @@ string_t markerName(string_t baseName, int n) {
     return mark;
 }
 
-void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon) {
-    if (scanf("%d %d %lf %d %lf", n, k, w, maxit, epsilon) != N_INPUTS)
-        handle_error("Erro ao ler o input");
-}
-
 void alloc_vectors(real_t **X, real_t **B, real_t **BSP, int n) {
     *X   = alloc_single_vector(USE_CALLOC, sizeof(real_t), n);
     *B   = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
@@ -49,7 +44,9 @@ void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_p
 
     printf("%d\n", n);
 
-    print_vector(X, n);
+    #ifdef _DEBUG_
+        print_vector(X, n);
+    #endif
 
     printf("%.8g\n"
                  "%.16g\n"

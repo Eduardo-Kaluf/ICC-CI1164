@@ -42,18 +42,14 @@ void criaKDiagonal(int n, int k, real_t **A, real_t *B) {
 
     int band_size = k / 2;
 
+    // Itera sobre cada linha
     for (int i = 0; i < n; i++)
-        for (int j = i + 1; j <= band_size + i && j < n; j++)
+        for (int j = (int) fmax(0, i - band_size); j < (int) fmin(n, i + band_size + 1); j++)
             A[i][j] = generateRandomA(i, j, k);
 
     for (int i = 0; i < n; i++)
-        for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-            A[i][j] = generateRandomA(i, j, k);
-
-    for (int i = 0; i < n; i++) {
-        A[i][i] = generateRandomA(i, i, k);
         B[i] = generateRandomB(k);
-    }
+
 }
 
 /* Gera matriz simetrica positiva */

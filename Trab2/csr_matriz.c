@@ -69,11 +69,13 @@ void print_csr(csr *c, enum MODE mode) {
 
                 printf("\n");
             }
+
             break;
         default:
             break;
     }
 
+    printf("\n");
     print_vector(c->B, c->n);
     printf("\n");
 }

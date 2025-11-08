@@ -5,7 +5,7 @@
 #include "vetor.h"
 
 
-real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
+real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, rtime_t *tempo) {
     if (!A || !B || !X || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -26,7 +26,7 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
     *tempo = timestamp();
 
-    real_t norm;
+    real_t norm = 0;
     int i;
     for (i = 0; i < maxit; i++) {
         matrix_times_vector(A, n, V, Z);
@@ -40,9 +40,6 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
         matrix_times_vector(M, n, R, Y);
 
         norm = calc_norm(X, X_old, n);
-
-        if (norm < epsilon)
-            break;
 
         copy_vector(X_old, X, n);
 
