@@ -26,9 +26,12 @@ real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
 
     *tempo = timestamp();
 
-    real_t norm = 0;
     int i;
     for (i = 0; i < MAX_IT; i++) {
+        #ifdef _LIK_
+                LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
+
         csr_time_vector(c, V, Z);
 
         real_t s = aux / dot_product(V, Z, c->n);
@@ -39,18 +42,21 @@ real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
 
         jacobi_times_vector(M, R, Y, c->n);
 
-        norm = calc_norm(X, X_old, c->n);
+        const real_t aux1 = dot_product(Y, R, c->n);
 
-        copy_vector(X_old, X, c->n);
-
-        real_t aux1 = dot_product(Y, R, c->n);
-
-        real_t m = aux1 / aux;
+        const real_t m = aux1 / aux;
 
         aux = aux1;
 
         for (int j = 0; j < c->n; j++)
             V[j] = Y[j] + m * V[j];
+
+        if (i == MAX_IT - 2)
+            copy_vector(X_old, X, c->n);
+
+        #ifdef _LIK_
+                LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
     }
 
     // Média do tempo
@@ -58,7 +64,7 @@ real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
 
     free(R); free(V); free(Z); free(Y); free(X_old);
 
-    return norm;
+    return calc_norm(X, X_old, c->n);
 }
 
 real_t calc_norm(real_t *X, real_t *X_old, int n) {

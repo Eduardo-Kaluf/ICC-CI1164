@@ -91,25 +91,30 @@ csr* genSimetricaPositiva(csr *c, rtime_t *tempo) {
             const int row_start2 = CT->row_ptr[j];
             const int row_end2 = CT->row_ptr[j+1];
 
+            if (CT->col_ind[row_end - 1] < CT->col_ind[row_start2] || CT->col_ind[row_start] > CT->col_ind[row_end2 - 1])
+                continue;
+
             real_t sum = 0;
+
             for (int h = row_start, l = row_start2; h < row_end && l < row_end2;) {
-                if (CT->col_ind[h] == CT->col_ind[l]) {
+                const int col_ind_h = CT->col_ind[h];
+                const int col_ind_l = CT->col_ind[l];
+
+                if (col_ind_h == col_ind_l) {
                     sum += CT->values[h] * CT->values[l];
                     l++;
                     h++;
                 }
-                else if (CT->col_ind[h] > CT->col_ind[l])
+                else if (col_ind_h > col_ind_l)
                     l++;
                 else
                     h++;
             }
 
-            if (sum != 0) {
-                c_out->row_ptr[i + 1] += 1;
-                c_out->values[counter] = sum;
-                c_out->col_ind[counter] = j;
-                counter++;
-            }
+            c_out->row_ptr[i + 1] += 1;
+            c_out->values[counter] = sum;
+            c_out->col_ind[counter] = j;
+            counter++;
         }
     }
 

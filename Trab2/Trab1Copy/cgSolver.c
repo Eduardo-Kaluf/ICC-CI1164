@@ -11,6 +11,10 @@
 int main() {
     srandom(20252);
 
+    #ifdef _LIK_
+        LIKWID_MARKER_INIT;
+    #endif
+
     rtime_t total_time = timestamp();
 
     printf("Trab1 - Standard \n");
@@ -49,7 +53,15 @@ int main() {
 
     real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, &time_iter);
 
+    #ifdef _LIK_
+        LIKWID_MARKER_START(markerName("RESIDUO", 1));
+    #endif
+
     real_t residuo = calcResiduoSL(A, B, X, n, k, &time_residuo);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_STOP(markerName("RESIDUO", 1));
+    #endif
 
     rtime_t total_pc_time = time_pc + time_simetrica + time_dlu;
 
@@ -58,6 +70,10 @@ int main() {
     free_all_memory(&X, &B, &BSP, &A, &ASP, &M, &D, &L, &U, n);
 
     printf("\nTotal Time %f\n", timestamp() - total_time);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_CLOSE;
+    #endif
 
     return 0;
 }

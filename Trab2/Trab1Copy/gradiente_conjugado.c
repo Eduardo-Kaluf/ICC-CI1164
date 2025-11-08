@@ -29,6 +29,10 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
     real_t norm = 0;
     int i;
     for (i = 0; i < maxit; i++) {
+        #ifdef _LIK_
+            LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
+
         matrix_times_vector(A, n, V, Z);
 
         real_t s = aux / dot_product(V, Z, n);
@@ -51,6 +55,10 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
         for (int j = 0; j < n; j++)
             V[j] = Y[j] + m * V[j];
+
+        #ifdef _LIK_
+            LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
     }
 
     // Média do tempo

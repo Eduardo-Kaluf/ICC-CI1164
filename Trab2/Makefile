@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -O0
+CFLAGS = -g -O3 -march=native -mavx -fopt-info-vec
 LFLAGS = -lm
 
 PROG = cgSolver
@@ -12,12 +12,9 @@ SRCS = $(addsuffix .c,$(MODULES)) $(addsuffix .h,$(MODULES))
 DISTFILES = *.c *.h Makefile README.md
 DISTDIR = ek24-sssaf24
 
-.PHONY: clean purge dist all debug
+.PHONY: clean purge dist all debug lik
 
 all: $(PROG)
-
-debug:	CFLAGS += -g -D_DEBUG_
-debug:	$(PROG)
 
 %.o: %.c %.h utils.h
 	$(CC) -c $(CFLAGS) $<
@@ -25,8 +22,12 @@ debug:	$(PROG)
 $(PROG): $(OBJS)
 	$(CC) -o $@ $^ $(LFLAGS)
 
-debug:   CFLAGS+=-D__DEBUG__
+debug: CFLAGS += -D_DEBUG_
 debug: $(PROG)
+
+lik: CFLAGS += -DLIKWID_PERFMON -I${LIKWID_INCLUDE} -DLIKWID_TEST -D_LIK_
+lik: LFLAGS += -L${LIKWID_LIB} -llikwid
+lik: $(PROG)
 
 clean:
 	@echo "Limpando sujeira ....."
