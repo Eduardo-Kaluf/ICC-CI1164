@@ -1,11 +1,12 @@
 #include <math.h>
+#include <stdio.h>
 
 #include "gradiente_conjugado.h"
 #include "csr_matriz.h"
 #include "vetor.h"
 
 
-real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
+real_t calc_gradiente_conjugado(csr * restrict c, real_t * restrict X, real_t * restrict M, rtime_t *tempo) {
     if (!c || !X || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -51,7 +52,9 @@ real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
         for (int j = 0; j < c->n; j++)
             V[j] = Y[j] + m * V[j];
 
-        if (i == MAX_IT - 2)
+        // na penultima iteração ele copia o vetor para calcular 
+        // a norma do penultimo valor de X com o ultimo valor.
+        if (i == MAX_IT - SECOND_LAST_IT)
             copy_vector(X_old, X, c->n);
 
         #ifdef _LIK_
@@ -62,9 +65,12 @@ real_t calc_gradiente_conjugado(csr *c, real_t *X, real_t *M, rtime_t *tempo) {
     // Média do tempo
     *tempo = (timestamp() - *tempo) / i;
 
+    real_t norm = calc_norm (X, X_old, c->n);
+
     free(R); free(V); free(Z); free(Y); free(X_old);
 
-    return calc_norm(X, X_old, c->n);
+
+    return norm;
 }
 
 real_t calc_norm(real_t *X, real_t *X_old, int n) {
@@ -72,9 +78,12 @@ real_t calc_norm(real_t *X, real_t *X_old, int n) {
 
     for (int i = 0; i < n; i++) {
         real_t current_norm = fabs(X_old[i] - X[i]);
+        if(current_norm <= __DBL_EPSILON__)
+            return __DBL_EPSILON__;
 
         if (current_norm > norm_max)
             norm_max = current_norm;
+
     }
 
     return norm_max;

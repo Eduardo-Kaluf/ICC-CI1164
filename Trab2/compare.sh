@@ -8,7 +8,7 @@ make purge
 
 cd ./Trab1Copy
 
-make
+make 
 result2=$(echo "$input" | ./cgSolver)
 make purge
 

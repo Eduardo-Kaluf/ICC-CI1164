@@ -18,6 +18,32 @@ csr* alloc_csr(int n, int nnz_capacity) {
     return A;
 }
 
+void free_csr (csr *c) {
+    if (!c)
+        return;
+    
+    if (c->row_ptr) {
+        free(c->row_ptr);
+        c->row_ptr = NULL;
+    }
+ 
+    if (c->col_ind) {
+        free(c->col_ind);
+        c->row_ptr = NULL;
+    }
+
+    if (c->values) {
+        free(c->values);
+        c->values = NULL;
+    }
+
+    if (c->B) {
+        free(c->B);
+        c->B = NULL;
+    }
+    free(c);
+}
+
 void print_csr(csr *c, enum MODE mode) {
     const int n = c->n;
 
@@ -116,7 +142,7 @@ csr* csr_transpose(const csr *c) {
         }
     }
 
-    c_out->B = c->B;
+    copy_vector(c_out->B, c->B, c->n);
 
     free(temp_counts);
     return c_out;

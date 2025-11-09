@@ -8,7 +8,15 @@ enum ALLOC_TYPE {
     USE_MALLOC
 };
 
-
+/**
+ * @brief Retorna um vetor como resultado da multiplicação da matriz 
+ *        de condicionadores M (guardada como vetor por só contar a diagonal) por um outro vetor 
+ *
+ * @param M Matriz de pré-condicionadores
+ * @param X Vetor operando
+ * @param V Vetor destino
+ * @param n Tamanho dos vetores
+ */
 void jacobi_times_vector(real_t *M, real_t *X, real_t *V, int n);
 
 /**

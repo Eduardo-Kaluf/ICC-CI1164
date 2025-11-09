@@ -29,6 +29,14 @@ enum MODE {
 csr* alloc_csr(int n, int nnz_capacity);
 
 /**
+ * @brief Desaloca uma matriz CSR
+ *
+ * @param c Matriz CSR a ser liberada
+ * 
+ */
+void free_csr (csr *c);
+
+/**
  * @brief Aloca uma matriz CSR
  *
  * @param c Matriz k-diagonal guardada como CSR

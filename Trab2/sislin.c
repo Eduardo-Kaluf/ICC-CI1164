@@ -16,6 +16,16 @@ static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned in
 
 static inline real_t generateRandomB(unsigned int k);
 
+
+
+static inline int max (int a, int b) {
+    return (a > b) ? a : b;
+}
+
+static inline int min (int a, int b) {
+    return (a < b) ? a : b;
+}
+
 /**
  * Função que gera os coeficientes de um sistema linear k-diagonal
  * @param i,j coordenadas do elemento a ser calculado (0<=i,j<n)
@@ -119,13 +129,15 @@ csr* genSimetricaPositiva(csr *c, rtime_t *tempo) {
     }
 
     csr_time_vector(CT, CT->B, c_out->B);
+    
+    free_csr(CT);
 
     *tempo = timestamp() - *tempo;
 
     return c_out;
 }
 
-void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
+void geraCondicionadorJacobi(csr * restrict c, real_t * restrict M, rtime_t *tempo) {
     if (!c || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -152,7 +164,7 @@ void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
     *tempo = timestamp() - *tempo;
 }
 
-real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
+real_t calcResiduoSL(csr * restrict c, real_t *restrict X, rtime_t *tempo) {
     if (!c || !X || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -161,6 +173,7 @@ real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
 
     *tempo = timestamp();
 
+    real_t norm = 0.0;
     for (int i = 0; i < c->n; i++) {
         double sum = 0.0;
 
@@ -168,11 +181,8 @@ real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
             sum += c->values[k] * X[ c->col_ind[k]];
 
         r[i] -= sum;
-    }
-
-    real_t norm = 0.0;
-    for (int i = 0; i < c->n; i++)
         norm += r[i] * r[i];
+    }
 
     norm = sqrt(norm);
 

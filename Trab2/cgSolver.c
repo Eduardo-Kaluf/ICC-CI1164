@@ -64,7 +64,7 @@ int main() {
 
     print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
 
-    free(X); free(M);
+    free(X); free(M); free_csr(C_SP); free_csr(C);
 
     printf("\nTotal Time %f\n",  timestamp() - total_time);
 
