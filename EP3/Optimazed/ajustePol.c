@@ -21,7 +21,7 @@ void montaSL(double **A, double *b, int n, long long int p, double *x, double *y
       A[i][j] = 0.0;
       
       int factor = i + j;
-
+      
       for (long long int k = 0; k < p; k += 1) {
         double manual_pow1 = 1; 
         double manual_pow2 = 1; 
@@ -70,7 +70,7 @@ void montaSL(double **A, double *b, int n, long long int p, double *x, double *y
       
       manual_pow4 *= x[k] * x[k] * x[k];
 
-      b[i] += manual_pow1 * y[k];
+      b[i]     += manual_pow1 * y[k];
       b[i + 1] += manual_pow2 * y[k];
       b[i + 2] += manual_pow3 * y[k];
       b[i + 3] += manual_pow4 * y[k];
