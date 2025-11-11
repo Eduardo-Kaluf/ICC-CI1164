@@ -5,7 +5,7 @@
 #include "vetor.h"
 
 
-real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, real_t epsilon, rtime_t *tempo) {
+real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, int n, int maxit, rtime_t *tempo) {
     if (!A || !B || !X || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -26,9 +26,13 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
     *tempo = timestamp();
 
-    real_t norm;
+    real_t norm = 0;
     int i;
     for (i = 0; i < maxit; i++) {
+        #ifdef _LIK_
+            LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
+
         matrix_times_vector(A, n, V, Z);
 
         real_t s = aux / dot_product(V, Z, n);
@@ -41,9 +45,6 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
         norm = calc_norm(X, X_old, n);
 
-        if (norm < epsilon)
-            break;
-
         copy_vector(X_old, X, n);
 
         real_t aux1 = dot_product(Y, R, n);
@@ -54,6 +55,10 @@ real_t calc_gradiente_conjugado(real_t **A, real_t *B, real_t *X, real_t **M, in
 
         for (int j = 0; j < n; j++)
             V[j] = Y[j] + m * V[j];
+
+        #ifdef _LIK_
+            LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", i));
+        #endif
     }
 
     // Média do tempo

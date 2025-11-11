@@ -26,9 +26,6 @@ typedef double rtime_t;
 // Macro para verificar se valor 'n' é potência de 2 ou não
 #define isPot2(n) (n && !(n & (n - 1)))
 
-int max (int a, int b);
-// TODO TODO TODO TRANSFORM INTO INLINE FUNCTION
-int min (int a, int b);
 
 #define K 7
 #define OFF_SET 12
@@ -39,6 +36,8 @@ int min (int a, int b);
 #define BAND_WIDTH K / 2
 
 #define MAX_IT 25
+
+#define SECOND_LAST_IT 2
 
 /**
  * @brief Retorna tempo em milisegundos desde EPOCH.

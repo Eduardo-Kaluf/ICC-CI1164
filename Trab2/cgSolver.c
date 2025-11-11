@@ -6,9 +6,21 @@
 #include "sislin.h"
 #include "utils.h"
 
+#ifdef _LIK_
+	#include <likwid.h>
+#endif
+
 
 int main() {
     srandom(20252);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_INIT;
+    #endif
+
+    rtime_t total_time = timestamp();
+
+    printf("Trab2 - Optimazed \n");
 
     int n;
 
@@ -30,23 +42,35 @@ int main() {
 
     criaKDiagonal(C);
 
-    csr *C_SP = genSimetricaPositiva(C, &time_simetrica);
-
     #ifdef _DEBUG_
         print_csr(C, STANDARD_MODE);
-        printf("\n\n");
-        print_csr(C_SP, STANDARD_MODE);
     #endif
+
+    csr *C_SP = genSimetricaPositiva(C, &time_simetrica);
 
     geraCondicionadorJacobi(C_SP, M, &time_pc);
 
     const real_t norm = calc_gradiente_conjugado(C_SP, X, M, &time_iter);
 
+    #ifdef _LIK_
+        LIKWID_MARKER_START(markerName("RESIDUO", 1));
+    #endif
+
     const real_t residuo = calcResiduoSL(C_SP, X, &time_residuo);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_STOP(markerName("RESIDUO", 1));
+    #endif
 
     print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
 
-    free(X); free(M);
+    free(X); free(M); free_csr(C_SP); free_csr(C);
+
+    printf("\nTotal Time %f\n",  timestamp() - total_time);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_CLOSE;
+    #endif
 
     return 0;
 }

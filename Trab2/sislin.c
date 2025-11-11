@@ -5,12 +5,26 @@
 
 #include "csr_matriz.h"
 #include "sislin.h"
+
+#include <string.h>
+
 #include "utils.h"
+#include "vetor.h"
 
 
 static inline real_t generateRandomA(unsigned int i, unsigned int j, unsigned int k);
 
 static inline real_t generateRandomB(unsigned int k);
+
+
+
+static inline int max (int a, int b) {
+    return (a > b) ? a : b;
+}
+
+static inline int min (int a, int b) {
+    return (a < b) ? a : b;
+}
 
 /**
  * Função que gera os coeficientes de um sistema linear k-diagonal
@@ -87,37 +101,43 @@ csr* genSimetricaPositiva(csr *c, rtime_t *tempo) {
             const int row_start2 = CT->row_ptr[j];
             const int row_end2 = CT->row_ptr[j+1];
 
+            if (CT->col_ind[row_end - 1] < CT->col_ind[row_start2] || CT->col_ind[row_start] > CT->col_ind[row_end2 - 1])
+                continue;
+
             real_t sum = 0;
+
             for (int h = row_start, l = row_start2; h < row_end && l < row_end2;) {
-                if (CT->col_ind[h] == CT->col_ind[l]) {
+                const int col_ind_h = CT->col_ind[h];
+                const int col_ind_l = CT->col_ind[l];
+
+                if (col_ind_h == col_ind_l) {
                     sum += CT->values[h] * CT->values[l];
                     l++;
                     h++;
                 }
-                else if (CT->col_ind[h] > CT->col_ind[l])
+                else if (col_ind_h > col_ind_l)
                     l++;
                 else
                     h++;
             }
 
-            if (sum != 0) {
-                c_out->row_ptr[i + 1] += 1;
-                c_out->values[counter] = sum;
-                c_out->col_ind[counter] = j;
-                counter++;
-            }
+            c_out->row_ptr[i + 1] += 1;
+            c_out->values[counter] = sum;
+            c_out->col_ind[counter] = j;
+            counter++;
         }
     }
 
     csr_time_vector(CT, CT->B, c_out->B);
+    
+    free_csr(CT);
 
     *tempo = timestamp() - *tempo;
 
     return c_out;
 }
 
-
-void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
+void geraCondicionadorJacobi(csr * restrict c, real_t * restrict M, rtime_t *tempo) {
     if (!c || !M || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
@@ -130,8 +150,6 @@ void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
             if (c->col_ind[j] == i) {
 
                 const real_t diagonal_value = c->values[j];
-
-                printf("%f", diagonal_value);
 
                 if (diagonal_value != 0)
                     M[i] = 1 / diagonal_value;
@@ -146,55 +164,31 @@ void geraCondicionadorJacobi(csr *c, real_t *M, rtime_t *tempo) {
     *tempo = timestamp() - *tempo;
 }
 
-// TODO TODO TODO OPTIMAZE THIS
-real_t calcResiduoSL(csr *c, real_t *X, rtime_t *tempo) {
+real_t calcResiduoSL(csr * restrict c, real_t *restrict X, rtime_t *tempo) {
     if (!c || !X || !tempo)
         handle_error("Tentativa de acesso a um ponteiro nulo");
 
-    // *tempo = timestamp();
-    //
-    // int band_size = k / 2;
-    // real_t norm = 0.0;
-    //
-    // real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), n);
-    // copy_vector(r, B, n);
-    //
-    //
-    // //
-    // for (int i = 0; i < n; i++)
-    //     for(int j = 0; j < band_size; j++)
-    //         r[i] -= A[i + (j * n)] * X[j];
-    //
-    // // // Lower part of the matrix
-    // // for (int i = 0; i < n; i++)
-    // //     for (int j = i - 1; j >= i - band_size && j >= 0; j--)
-    // //         r[i] -= A[i][j] * X[j];
-    //
-    // // Diagonal
-    // for (int i = 0; i < n; i++)
-    //     r[i] -= A[i + (n * band_size)] * X[i];
-    //
-    //
-    // //i is the row and j the line
-    // for (int i = 0; i < n; i++)
-    //     for(int j = 0; j < band_size; j++)
-    //         r[i] -= A[(n * (band_size + 1)) + i + (j * n)] * X[j];
-    // // // Upper part of the matrix
-    // // for (int i = 0; i < n; i++)
-    // //     for (int j = i + 1; j <= band_size + i && j < n; j++)
-    // //         r[i] -= A[i][j] * X[j];
-    //
-    // for (int i = 0; i < n; i++)
-    //     norm += r[i] * r[i];
-    //
-    // norm = sqrt(norm);
-    //
-    // free(r);
-    //
-    // *tempo = timestamp() - *tempo;
-    //
-    // return norm;
+    real_t *r = alloc_single_vector(USE_MALLOC, sizeof(real_t), c->n);
+    copy_vector(r, c->B, c->n);
 
-    // MOCK
-    return 2.0;
+    *tempo = timestamp();
+
+    real_t norm = 0.0;
+    for (int i = 0; i < c->n; i++) {
+        double sum = 0.0;
+
+        for (int k = c->row_ptr[i]; k < c->row_ptr[i+1]; k++)
+            sum += c->values[k] * X[ c->col_ind[k]];
+
+        r[i] -= sum;
+        norm += r[i] * r[i];
+    }
+
+    norm = sqrt(norm);
+
+    *tempo = timestamp() - *tempo;
+
+    free(r);
+
+    return norm;
 }

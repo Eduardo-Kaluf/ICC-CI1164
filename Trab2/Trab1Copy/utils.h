@@ -26,6 +26,12 @@ typedef double rtime_t;
 // Macro para verificar se valor 'n' é potência de 2 ou não
 #define isPot2(n) (n && !(n & (n - 1)))
 
+#define K 7
+
+#define MAX_IT 25
+
+#define W 0.0
+
 /**
  * @brief Retorna tempo em milisegundos desde EPOCH.
  *
@@ -42,18 +48,6 @@ rtime_t timestamp(void);
  * @return String no formato de marcador (EX: ABC_10)
  */
 string_t markerName(string_t baseName, int n);
-
-/**
- * @brief Realiza a leitura dos inputs base do programa
- *
- * @param n Dimensão das matrizes e tamanho dos vetores do programa
- * @param k Número de diagonais da matriz
- * @param w Seletor do pré-condicionador
- * @param maxit Número máximo de iterações
- * @param epsilon Erro aproximado absoluto máximo
- */
-void read_input(int *n, int *k, real_t *w, int *maxit, real_t *epsilon);
-
 
 /**
  * @brief Aloca vetores necessários para o programa

@@ -5,6 +5,16 @@
 #include "vetor.h"
 
 
+
+void jacobi_times_vector(real_t *M, real_t *X, real_t *V, int n) {
+    if (!M || !X)
+        handle_error("Tentativa de acesso a um ponteiro nulo");
+
+    for (int i = 0; i < n; i++)
+        V[i] = M[i] * X[i];
+}
+
+
 real_t dot_product(real_t *v1, real_t *v2, int n) {
     if (!v1 || !v2)
         handle_error("Tentativa de acesso a um ponteiro nulo");

@@ -7,14 +7,6 @@
 #include "vetor.h"
 
 
-int max (int a, int b) {
-    return (a > b) ? a : b;
-}
-
-int min (int a, int b) {
-    return (a < b) ? a : b;
-}
-
 rtime_t timestamp(void) {
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC_RAW, &tp);
@@ -40,7 +32,9 @@ void print_results(int n, real_t *X, real_t norm, real_t residuo, rtime_t time_p
 
     printf("%d\n", n);
 
-    print_vector(X, n);
+    #ifdef _DEBUG_
+        print_vector(X, n);
+    #endif
 
     printf("%.8g\n"
                  "%.16g\n"
