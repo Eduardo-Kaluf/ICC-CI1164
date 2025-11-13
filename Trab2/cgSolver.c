@@ -11,7 +11,7 @@
 #endif
 
 
-int main() {
+int main(int argc, char **argv) {
     srandom(20252);
 
     #ifdef _LIK_
@@ -22,9 +22,12 @@ int main() {
 
     printf("Trab2 - Optimazed \n");
 
-    int n;
+    if (argc < 2) {
+        printf("Utilização: %s inicial final n_amostras\n", argv[0]);
+        return 1;
+    }
 
-    scanf("%d", &n);
+    int n = atoi(argv[1]);
 
     if (K > n)
         handle_error("K não pode ser maior do que n");
@@ -50,7 +53,15 @@ int main() {
 
     geraCondicionadorJacobi(C_SP, M, &time_pc);
 
+    #ifdef _LIK_
+        LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", 1));
+    #endif
+
     const real_t norm = calc_gradiente_conjugado(C_SP, X, M, &time_iter);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", 1));
+    #endif
 
     #ifdef _LIK_
         LIKWID_MARKER_START(markerName("RESIDUO", 1));
@@ -62,11 +73,13 @@ int main() {
         LIKWID_MARKER_STOP(markerName("RESIDUO", 1));
     #endif
 
-    print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
+    // print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
+
+    printf("%.8g\n" "%.8g\n", time_iter, time_residuo);
 
     free(X); free(M); free_csr(C_SP); free_csr(C);
 
-    printf("\nTotal Time %f\n",  timestamp() - total_time);
+    // printf("\nTotal Time %f\n",  timestamp() - total_time);
 
     #ifdef _LIK_
         LIKWID_MARKER_CLOSE;

@@ -5,6 +5,10 @@
 #include "csr_matriz.h"
 #include "vetor.h"
 
+#ifdef _LIK_
+    #include <likwid.h>
+#endif
+
 
 real_t calc_gradiente_conjugado(csr * restrict c, real_t * restrict X, real_t * restrict M, rtime_t *tempo) {
     if (!c || !X || !M || !tempo)
@@ -29,10 +33,6 @@ real_t calc_gradiente_conjugado(csr * restrict c, real_t * restrict X, real_t * 
 
     int i;
     for (i = 0; i < MAX_IT; i++) {
-        #ifdef _LIK_
-                LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", i));
-        #endif
-
         csr_time_vector(c, V, Z);
 
         real_t s = aux / dot_product(V, Z, c->n);
@@ -56,10 +56,6 @@ real_t calc_gradiente_conjugado(csr * restrict c, real_t * restrict X, real_t * 
         // a norma do penultimo valor de X com o ultimo valor.
         if (i == MAX_IT - SECOND_LAST_IT)
             copy_vector(X_old, X, c->n);
-
-        #ifdef _LIK_
-                LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", i));
-        #endif
     }
 
     // Média do tempo
