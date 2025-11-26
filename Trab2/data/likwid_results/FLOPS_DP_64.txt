@@ -1,0 +1,48 @@
+STRUCT,Info,3
+CPU name:,AMD EPYC 7401 24-Core Processor,
+CPU type:,AMD K17 (Zen) architecture,
+CPU clock:,1.999967128 GHz,
+TABLE,Region GRANDIENTE_CONJUGADO_1,Group 1 Raw,FLOPS_DP,6
+Region Info,Core 0,
+RDTSC Runtime [s],0.000026,
+call count,1,
+Event,Counter,Core 0
+ACTUAL_CPU_CLOCK,FIXC1,-
+MAX_CPU_CLOCK,FIXC2,-
+RETIRED_INSTRUCTIONS,PMC0,203931
+RETIRED_SSE_AVX_FLOPS_DOUBLE_FMA,PMC1,9600
+RETIRED_MMX_FP_INSTR_ALL,PMC2,81373
+RETIRED_SSE_AVX_FLOPS_DOUBLE_ADD_MULT_DIV,PMC3,0
+TABLE,Region GRANDIENTE_CONJUGADO_1,Group 1 Metric,FLOPS_DP,7
+Metric,Core 0,
+Runtime (RDTSC) [s],2.555041e-05,
+Runtime unhalted [s],0,
+Clock [MHz],-,
+CPI,-,
+DP MFLOP/s (scalar assumed),2343.8567,
+DP MFLOP/s (SSE assumed),3936.2578,
+DP MFLOP/s (AVX assumed),7121.0599,
+STRUCT,Info,3
+CPU name:,AMD EPYC 7401 24-Core Processor,
+CPU type:,AMD K17 (Zen) architecture,
+CPU clock:,1.999967128 GHz,
+TABLE,Region RESIDUO_1,Group 1 Raw,FLOPS_DP,6
+Region Info,Core 0,
+RDTSC Runtime [s],0.000002,
+call count,1,
+Event,Counter,Core 0
+ACTUAL_CPU_CLOCK,FIXC1,-
+MAX_CPU_CLOCK,FIXC2,-
+RETIRED_INSTRUCTIONS,PMC0,12901
+RETIRED_SSE_AVX_FLOPS_DOUBLE_FMA,PMC1,0
+RETIRED_MMX_FP_INSTR_ALL,PMC2,2974
+RETIRED_SSE_AVX_FLOPS_DOUBLE_ADD_MULT_DIV,PMC3,0
+TABLE,Region RESIDUO_1,Group 1 Metric,FLOPS_DP,7
+Metric,Core 0,
+Runtime (RDTSC) [s],2.480040e-06,
+Runtime unhalted [s],0,
+Clock [MHz],-,
+CPI,-,
+DP MFLOP/s (scalar assumed),599.5871,
+DP MFLOP/s (SSE assumed),1199.1742,
+DP MFLOP/s (AVX assumed),2398.3484,

@@ -20,10 +20,12 @@ int main(int argc, char **argv) {
 
     rtime_t total_time = timestamp();
 
-    printf("Trab2 - Optimazed \n");
+    #ifndef _LIK_
+        printf("Trab2 - Optimazed \n");
+    #endif
 
     if (argc < 2) {
-        printf("Utilização: %s inicial final n_amostras\n", argv[0]);
+        printf("Utilização: %s n\n", argv[0]);
         return 1;
     }
 
@@ -73,13 +75,19 @@ int main(int argc, char **argv) {
         LIKWID_MARKER_STOP(markerName("RESIDUO", 1));
     #endif
 
-    // print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
+    #ifndef _LIK_
+        print_results(n, X, norm, residuo, time_pc + time_simetrica, time_iter, time_residuo);
+    #endif
 
-    printf("%.8g\n" "%.8g\n", time_iter, time_residuo);
+    #ifdef _LIK_
+         printf("%.8g\n" "%.8g\n", time_iter, time_residuo);
+    #endif
 
     free(X); free(M); free_csr(C_SP); free_csr(C);
 
-    // printf("\nTotal Time %f\n",  timestamp() - total_time);
+    #ifndef _LIK_
+        printf("\nTotal Time %f\n",  timestamp() - total_time);
+    #endif
 
     #ifdef _LIK_
         LIKWID_MARKER_CLOSE;
