@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+
+\bibitem{cenapad_essl}
+CENAPAD-SP.
+\newblock {\em
+  \href{https://www.cenapad.unicamp.br/parque/manuais/Essl/html/essl33.html#HDRSBC}{Engineering
+  and Scientific Subroutine Library Guide and Reference: Subroutine Reference
+  SDRSBC}}, 2025.
+
+\bibitem{researchgate_vectorized}
+Ed~F. D’Azevedo.
+\newblock
+  \href{https://www.researchgate.net/publication/220857607_Vectorized_Sparse_Matrix_Multiply_for_Compressed_Row_Storage_Format}{Vectorized
+  Sparse Matrix Multiply for Compressed Row Storage Format}, 2025.
+
+\bibitem{mao_csr}
+Lei Mao.
+\newblock
+  \href{https://leimao.github.io/blog/CSR-Sparse-Matrix-Multiplication/#CSR-Matrix-Multiplication}{CSR
+  Sparse Matrix Multiplication}, 2019.
+
+\bibitem{netlib_mv}
+Netlib.
+\newblock \href{https://netlib.org/linalg/html_templates/node98.html}{Parallel
+  Sparse Matrix-Vector Multiplication}, 2025.
+
+\bibitem{wiki_sparse}
+Wikipedia.
+\newblock
+  \href{https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_row_(CSR,_CRS_or_Yale_format)}{Sparse
+  matrix: Compressed sparse row (CSR, CRS or Yale format)}, 2025.
+
+\end{thebibliography}
