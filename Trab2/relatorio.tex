@@ -1,21 +1,58 @@
 \documentclass[11pt]{article}
 
-\title{Otimização do Desempenho para Sistemas Lineares Esparsos com Pré-condicionantes}
+\title{Otimização de Desempenho para Sistemas Lineares Esparsos com Pré-condicionantes}
 \author{SERGIO SIVONEI DE SANT'ANA FILHO GRR20242337\\EDUARDO KALUF GRR20241770}
 \date{\today}
 
-\begin{document}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{url}
+\usepackage{hyperref}
 
+
+% compile -> latexmk -pdf relatorio.tex
+% clean   -> latexmk -C
+
+\begin{document}
     \maketitle
 
     \section{Introdução}\label{sec:introducao}
 
     Este é o Relatório
 
-    int filled_cells = (k * (n - 2b)) + 3b^2 + band_width;
+    $int filled_cells = (k * (n - 2b)) + 3b^2 + band_width;$
 
     !!!
-    IMPORTANTE, ATUALMENTE A MÉTRICA DO GRADIENTE CONJUGADO ESTÁ SENDO FEITA POR COMPLETO, CASO O GRAFICO REQUERIDO SEJA DA MÉDIA, DIVIDIR INFORMAÇOES PELO TANTO DE EXECUÇÕES
-    !!!
+    IMPORTANTE, ATUALMENTE A MÉTRICA DO GRADIENTE CONJUGADO ESTÁ SENDO FEITA POR COMPLETO, CASO O GRAFICO REQUERIDO SEJA DA MÉDIA, DIVIDIR INFORMAÇOES PELO TANTO DE EXECUÇÕES    !!!
+
+    \section{Otimizações}\label{sec:otimizacoes}
+
+    \subsection{Gradiente Conjugado}\label{subsec:gradiente}
+
+    \subsubsection{CSR matrix}\label{subsubsec:csr}
+
+    \subsection{Residuo}\label{subsec:residuo}
+
+    \subsection{Simetrica positiva - extra}\label{subsec:simetrica}
+
+
+    \section{Resultados}\label{sec:resultados}
+
+
+
+
+    \section{Conclusão}\label{sec:conclusao}
+
+
+    \section{Referencias}\label{sec:referencias}
+
+
+    % Exemplo de uma citação
+    O formato CSR é amplamente discutido na literatura\cite{wiki_sparse}.
+
+    \nocite{*}
+    \bibliography{references}
+    \bibliographystyle{plain}
 
 \end{document}
