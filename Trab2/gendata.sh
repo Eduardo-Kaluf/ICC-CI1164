@@ -5,7 +5,7 @@ PROG=cgSolver
 CPU=3
 DATA_DIR="data"
 METRICAS="FLOPS_DP L2CACHE L3"
-TAMANHOS="32 64"
+TAMANHOS="32 64 128 256 512 1000 2000 4000 8000 9000 10000 20000"
 
 # Cria diretório para saída do likwid
 mkdir -p ${DATA_DIR}
