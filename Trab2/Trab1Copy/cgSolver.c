@@ -7,8 +7,11 @@
 #include "utils.h"
 #include "vetor.h"
 
+#ifdef _LIK_
+	#include <likwid.h>
+#endif
 
-int main() {
+int main(int argc, char **argv) {
     srandom(20252);
 
     #ifdef _LIK_
@@ -17,13 +20,20 @@ int main() {
 
     rtime_t total_time = timestamp();
 
-    printf("Trab1 - Standard \n");
+    #ifndef _LIK_
+        printf("Trab1 - Standard \n");
+    #endif
 
-    int n;
+    if (argc < 2) {
+        printf("Utilização: %s n\n", argv[0]);
+        return 1;
+    }
+
+    int n = atoi(argv[1]);
+
     real_t *X, *B, *BSP, **A, **ASP, **M, **D, **L, **U;
     rtime_t time_pc, time_simetrica, time_iter, time_residuo, time_dlu = 0.0;
 
-    scanf("%d", &n);
     int k = K;
     int maxit = MAX_IT;
     real_t w = W;
@@ -51,7 +61,15 @@ int main() {
 
     geraPreCond(D, L, U, w, n, k, M, &time_pc);
 
+    #ifdef _LIK_
+        LIKWID_MARKER_START(markerName("GRANDIENTE_CONJUGADO", 1));
+    #endif
+
     real_t norm = calc_gradiente_conjugado(ASP, BSP, X, M, n, maxit, &time_iter);
+
+    #ifdef _LIK_
+        LIKWID_MARKER_STOP(markerName("GRANDIENTE_CONJUGADO", 1));
+    #endif
 
     #ifdef _LIK_
         LIKWID_MARKER_START(markerName("RESIDUO", 1));
@@ -65,11 +83,19 @@ int main() {
 
     rtime_t total_pc_time = time_pc + time_simetrica + time_dlu;
 
-    print_results(n, X, norm, residuo, total_pc_time, time_iter, time_residuo);
+    #ifndef _LIK_
+        print_results(n, X, norm, residuo, total_pc_time, time_iter, time_residuo);
+    #endif
+
+    #ifdef _LIK_
+        printf("%.8g\n" "%.8g\n", time_iter, time_residuo);
+    #endif
 
     free_all_memory(&X, &B, &BSP, &A, &ASP, &M, &D, &L, &U, n);
-
-    printf("\nTotal Time %f\n", timestamp() - total_time);
+    
+    #ifndef _LIK_
+        printf("\nTotal Time %f\n", timestamp() - total_time);
+    #endif
 
     #ifdef _LIK_
         LIKWID_MARKER_CLOSE;
