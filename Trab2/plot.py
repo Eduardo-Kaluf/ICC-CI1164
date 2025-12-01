@@ -87,4 +87,8 @@ for operation, op_info in OP_MAP.items():
         axs.legend(title="Versão do Código")
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Ajusta para o título
-        plt.show()
+        filename = f"{op_info['id']}_{operation}_{metric_title.replace(' ', '_')}.png"
+
+        plt.savefig(f"graphs/{filename}", dpi=300)
+
+        plt.close(fig)

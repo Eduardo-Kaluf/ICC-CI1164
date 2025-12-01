@@ -9,6 +9,7 @@
 \usepackage[brazil]{babel}
 \usepackage{url}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 
 % compile -> latexmk -pdf relatorio.tex
@@ -19,40 +20,112 @@
 
     \section{Introdução}\label{sec:introducao}
 
-    Este é o Relatório
+%    \textbf{Atenção:} Atualmente, a métrica de tempo de execução do Gradiente Conjugado está sendo registrada para cada execução completa.
+%    Caso o gráfico final exija a \textbf{média} dos tempos de execução, será necessário dividir os valores de tempo total pelo número de execuções realizadas.
 
-    $int filled_cells = (k * (n - 2b)) + 3b^2 + band_width;$
+    Este trabalho visa principal realizar a otimização de operações computacionais-chave dentro do algoritmo do Método dos Gradientes Conjugados (CG),
+    visando calcular de forma mais eficiente a solução de sistemas lineares da forma $Ax=b$.
 
-    !!!
-    IMPORTANTE, ATUALMENTE A MÉTRICA DO GRADIENTE CONJUGADO ESTÁ SENDO FEITA POR COMPLETO, CASO O GRAFICO REQUERIDO SEJA DA MÉDIA, DIVIDIR INFORMAÇOES PELO TANTO DE EXECUÇÕES    !!!
+    Especificamente, busca-se aprimorar e avaliar o desempenho do programa computacional desenvolvido no 1º Trabalho Prático.
 
-    \section{Otimizações}\label{sec:otimizacoes}
+    As operações críticas que foram alvo de otimização são:
+    \begin{itemize}
+        \item A Iteração Central do Método de Gradiente Conjugado utilizando o Pré-condicionador de Jacobi (PCG).
+        \item O Cálculo do Resíduo do sistema.
+    \end{itemize}
+    A motivação para estas otimizações reside na natureza intensiva em computação dessas operações, especialmente ao lidar com matrizes esparsas de grande dimensão.
 
-    \subsection{Gradiente Conjugado}\label{subsec:gradiente}
+    \section{Otimizações Implementadas}\label{sec:otimizacoes}
 
-    \subsubsection{CSR matrix}\label{subsubsec:csr}
+    Nesta seção, detalhamos as técnicas de otimização aplicadas às operações, descrevendo seu impacto teórico e prático no desempenho,
+    bem como os desafios encontrados durante o processo de implementação e ajuste.
 
-    \subsection{Residuo}\label{subsec:residuo}
+    \subsection{Otimização do Gradiente Conjugado (PCG)}\label{subsec:gradiente}
 
-    \subsection{Simetrica positiva - extra}\label{subsec:simetrica}
+    A otimização da iteração do Gradiente Conjugado, que envolve múltiplas operações de produto matriz-vetor ($A \times v$),
+    foi realizada primariamente através da alteração do formato de armazenamento da matriz do sistema.
 
+    \subsubsection{Matriz CSR (Compressed Sparse Row)}\label{subsubsec:csr}
 
-    \section{Resultados}\label{sec:resultados}
+    O formato CSR (Compressed Sparse Row) foi a principal modificação estrutural implementada.
 
+    Este foi o terceiro método de armazenar a matriz que experimentamos, primeiramente tentamos guardá-las em um único vetor sem offsets e
+    depois tentamos em diversos vetores de tamanhos diferentes.
+    Desistimos de ambas as implementações, pois não pareciam práticas para realizar as operações e não ofertavam nenhum benefício
+    grande aparente além da diminuição do tanto de memório utilizada
 
+    O método escolhido é um esquema de armazenamento de matrizes projetado especificamente para lidar com matrizes esparsas, ou seja,
+    matrizes que possuem uma alta proporção de elementos nulos.
 
+    Este formato elimina a necessidade de armazenar informações redundantes (os zeros), operando sobre apenas três vetores de dimensão reduzida:
+    \begin{itemize}
+        \item \textbf{'Values'}: armazena apenas os valores não nulos da matriz.
+        \item \textbf{'Col\_indices'}: armazena os índices das colunas correspondentes a cada valor não nulo.
+        \item \textbf{'Row\_pointers'}: armazena os índices que indicam o início de cada nova linha nos vetores \('\)values' e \('\)col\_indices'.
+    \end{itemize}
+    A principal vantagem do CSR é sua extrema eficiência para operações de multiplicação matriz-vetor ($A \times v$).
+
+    Dada a estrutura da iteração do Gradiente Conjugado (PCG), que exige duas ou mais dessas multiplicações por passo, o uso do CSR é crucial para reduzir o tempo de execução.
+    Esta abordagem melhora a localidade de dados e permite \textbf{acessos sequenciais} à memória, que são mais rápidos e otimizam a utilização da cache.
+
+    \textbf{Vetorialização (Uso de AVX):} Além disso, devido ao modo como o armazenamento CSR funciona, foi possível utilizar AVX neste método, deixando
+    a iteração do método ainda mais rápida.
+    A vetorização utiliza as Extensões Avançadas de Vetor (AVX) do processador, permitindo que uma única instrução da CPU
+    (SIMD - Single Instruction, Multiple Data) opere simultaneamente sobre múltiplos dados.
+    Isso foi essencial para \textbf{diminuir drasticamente} o tempo de execução das operações vetoriais, explorando a capacidade de paralelismo ao nível de hardware.
+
+    \subsection{Otimização do Cálculo do Resíduo}\label{subsec:residuo}
+
+    O cálculo do resíduo $r = b - A x$ requer primariamente uma multiplicação matriz-vetor e uma subtração de vetores.
+    A otimização focou em garantir a máxima eficiência nessas operações, complementando a desempenho obtida com a implementação do CSR para
+    multiplicação entre matriz vetor.
+
+    \subsection{Otimização Adicional: Matrizes Simétricas Positivas}\label{subsec:simetrica}
+
+    Além das duas operações fundamentais também otimizamos como a matriz simétrica positiva é calculada.
+    O método CSR é ruim quando se é necessário percorrer pelas colunas, sendo assim, a multiplicação de duas matrizes do jeito convencional
+    ficaria mais lento que o normal, a fim de contornar isso, fizemos a multiplicação entre a matriz principal e a transposta pelas linhas, ou seja, ao invés de multiplicar
+    linhas por colunas, multiplicamos linhas por linhas.
+    Além disso, o método apenas itera quando existe algum resultado possível, multiplicações que irão dar zero no final são ignorados pois não são necessárias
+
+    \section{Resultados e Análise de Desempenho}\label{sec:resultados}
+
+    Os resultados demonstram que a combinação do armazenamento CSR com a vetorização AVX produziu uma redução significativa no tempo de execução total,
+    especialmente em sistemas de alta dimensão e esparsidade.
+
+%    \begin{center}
+%        \includegraphics[width=0.8\linewidth]{grafico_comparativo_otimizacoes.png}
+%    \end{center}
+
+    A Tabela 1 resume o ganho de desempenho (speedup) alcançado para as operações críticas:
+
+    \begin{table}[h]
+        \centering
+        \caption{Comparação de Tempo de Execução: Original vs. Otimizado (Tempo Médio em segundos)}
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            \textbf{Operação} & \textbf{Tempo Original} & \textbf{Tempo Otimizado} & \textbf{Speedup} \\
+            \hline
+            Iteração do PCG & $T_{PCG, orig}$ & $T_{PCG, otim}$ & $T_{PCG, orig} / T_{PCG, otim}$ \\
+            \hline
+            Cálculo do Resíduo & $T_{Res, orig}$ & $T_{Res, otim}$ & $T_{Res, orig} / T_{Res, otim}$ \\
+            \hline
+            \textbf{Tempo Total} & $T_{Total, orig}$ & $T_{Total, otim}$ & $T_{Total, orig} / T_{Total, otim}$ \\
+            \hline
+        \end{tabular}\label{tab:table}
+    \end{table}
 
     \section{Conclusão}\label{sec:conclusao}
 
+    Conclui-se que as operações críticas do método dos Gradientes Conjugados foram otimizadas com sucesso.
+    Utilizando métodos estruturais (como a matriz \textbf{CSR} para matrizes esparsas) e técnicas de paralelismo ao nível de instrução (como a \textbf{vetorização AVX}),
+    alcançamos uma melhoria substancial no desempenho do programa.
+    Conseguimos confirmar a execução otimizada pelo \textbf{AVX} em pelo menos uma das operações e, como resultado,
+    \textbf{diminuímos drasticamente} o tempo de execução total do algoritmo, tornando o Método dos Gradientes Conjugados
+    mais eficiente para a resolução de sistemas lineares de grande escala.
 
-    \section{Referencias}\label{sec:referencias}
-
-
-    % Exemplo de uma citação
-    O formato CSR é amplamente discutido na literatura\cite{wiki_sparse}.
-
-    \nocite{*}
-    \bibliography{references}
-    \bibliographystyle{plain}
+     \section{Referencias}\label{sec:referencias}~\nocite{*}
+     \bibliography{references}
+     \bibliographystyle{plain}
 
 \end{document}
