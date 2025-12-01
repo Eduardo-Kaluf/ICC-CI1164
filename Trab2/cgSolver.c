@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     rtime_t total_time = timestamp();
 
     #ifndef _LIK_
-        printf("Trab2 - Optimazed \n");
+        printf("Trab2 - Optimized \n");
     #endif
 
     if (argc < 2) {
