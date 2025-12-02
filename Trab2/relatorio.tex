@@ -93,6 +93,21 @@
     linhas por colunas, multiplicamos linhas por linhas.
     Além disso, o método apenas itera quando existe algum resultado possível, multiplicações que irão dar zero no final são ignorados pois não são necessárias.
 
+    \section{Análise dos Gráficos}\label{sec:graphics}
+
+    \subsection{ Método dos Gradientes Conjugados (CG)}
+    \includegraphics[width=16cm]{graphs/op1_gradient_Exec_Time.png}
+    \includegraphics[width=4cm]{graphs/op1_gradient_Flops_Avx.png}
+    \includegraphics[width=4cm]{graphs/op1_gradient_Flops_Dp.png}
+    \includegraphics[width=4cm]{graphs/op1_gradient_L2Cache.png}
+    \includegraphics[width=4cm]{graphs/op1_gradient_L3.png}
+    \subsection{Cálculo do Resíduo}
+    \includegraphics[width=4cm]{graphs/op2_residue_Exec_Time.png}
+    \includegraphics[width=4cm]{graphs/op2_residue_Flops_Avx.png}
+    \includegraphics[width=4cm]{graphs/op2_residue_Flops_Dp.png}
+    \includegraphics[width=4cm]{graphs/op2_residue_L2Cache.png}
+    \includegraphics[width=4cm]{graphs/op2_residue_L3.png}
+
     \section{Resultados e Análise de Desempenho}\label{sec:resultados}
 
     Os resultados demonstram que a combinação do armazenamento \textbf{CSR} com a vetorização \textbf{AVX} produziu uma redução significativa no tempo de execução total,
