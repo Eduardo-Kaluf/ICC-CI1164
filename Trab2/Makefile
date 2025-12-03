@@ -9,7 +9,7 @@ OBJS = $(addsuffix .o,$(MODULES))
 SRCS = $(addsuffix .c,$(MODULES)) $(addsuffix .h,$(MODULES))
 
 # Lista de arquivos para distribuição
-DISTFILES = *.c *.h Makefile README.md
+DISTFILES = *.c *.h Makefile *.pdf
 DISTDIR = ek24-sssaf24
 
 .PHONY: clean purge dist all debug lik

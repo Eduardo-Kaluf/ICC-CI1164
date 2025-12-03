@@ -12,7 +12,7 @@
 \usepackage{graphicx}
 
 
-% compile -> latexmk -pdf relatorio.tex
+% compile -> latexmk -pdf RELATORIO-ek24-sssaf24.tex
 % clean   -> latexmk -C
 
 \begin{document}
@@ -20,7 +20,7 @@
 
     \section{Introdução}\label{sec:introducao}
 
-    Este trabalho visa principalmente realizar a otimização de operações computacionais chave dentro do algoritmo do Método dos Gradientes Conjugados (CG),
+    Este trabalho visa realizar principalmente a otimização de operações computacionais chave dentro do algoritmo do Método dos Gradientes Conjugados (CG),
     visando calcular de forma mais eficiente a solução de sistemas lineares da forma $Ax=b$.
 
     Especificamente, busca-se aprimorar e avaliar o desempenho do programa computacional desenvolvido no 1º Trabalho Prático.
@@ -33,6 +33,7 @@
 
     A motivação para estas otimizações reside na natureza intensiva em computação dessas operações, bem como no grande tráfego de memória, especialmente ao lidar com matrizes esparsas de grande dimensão.
 
+    \clearpage
     \section{Otimizações Implementadas}\label{sec:otimizacoes}
 
     Nesta seção, detalhamos as técnicas de otimização aplicadas às operações, descrevendo seu impacto teórico e prático no desempenho,
@@ -78,12 +79,13 @@
     A otimização focou em garantir a máxima eficiência nessas operações, complementando a desempenho obtida com a implementação do \textbf{CSR} para
     multiplicação entre matriz vetor.
 
-    Foram feitas algumas pequenas alterações de otimização, porém o maior ganho de desempenho foi devido a estrutura \textbf{CSR}. Houve também a tentativa de implementar o \textit{loop unroll} \& \textit{jam}, 
+    Foram feitas algumas pequenas alterações de otimização, porém o maior ganho de desempenho foi devido à estrutura \textbf{CSR}.
+    Houve também a tentativa de implementar o \textit{loop unroll} \& \textit{jam},
     porém sem sucesso, pois os testes mostraram uma piora significativa no tempo de execução do calcúlo.
 
-    Outra otimização foi realizar parte do calculo da norma dentro do laço que cálcula o vetor resíduo, assim aproveitando um valor que já 
-    está em memória sem a necessidade de outro loop que iria acessar todas as posições novamente. Todavia, nos testes realizados, 
-    não foi observado grande mudança, na maioria apenas pequenas variações de tempo.
+    Outra otimização foi realizar parte do cálculo da norma dentro do laço que cálcula o vetor resíduo, assim aproveitando um valor que já
+    está em memória sem a necessidade de outro loop que iria acessar todas as posições novamente.
+    Todavia, nos testes realizados, não foi observado grande mudança, na maioria apenas pequenas variações de tempo.
 
     \subsection{Otimização Adicional: Matrizes Simétricas Positivas}\label{subsec:simetrica}
 
@@ -91,22 +93,35 @@
     O método \textbf{CSR} é ruim quando se é necessário percorrer pelas colunas, sendo assim, a multiplicação de duas matrizes do jeito convencional
     ficaria mais lento que o esperado, a fim de contornar isso, fizemos a multiplicação entre a matriz principal e a transposta pelas linhas, ou seja, ao invés de multiplicar
     linhas por colunas, multiplicamos linhas por linhas.
-    Além disso, o método apenas itera quando existe algum resultado possível, multiplicações que irão dar zero no final são ignorados pois não são necessárias.
+    Além disso, o método apenas itera quando existe algum resultado possível, multiplicações que irão dar zero no final são ignorados, pois não são necessárias.
 
     \section{Análise dos Gráficos}\label{sec:graphics}
 
-    \subsection{ Método dos Gradientes Conjugados (CG)}
-    \includegraphics[width=16cm]{graphs/op1_gradient_Exec_Time.png}
-    \includegraphics[width=4cm]{graphs/op1_gradient_Flops_Avx.png}
-    \includegraphics[width=4cm]{graphs/op1_gradient_Flops_Dp.png}
-    \includegraphics[width=4cm]{graphs/op1_gradient_L2Cache.png}
-    \includegraphics[width=4cm]{graphs/op1_gradient_L3.png}
-    \subsection{Cálculo do Resíduo}
-    \includegraphics[width=4cm]{graphs/op2_residue_Exec_Time.png}
-    \includegraphics[width=4cm]{graphs/op2_residue_Flops_Avx.png}
-    \includegraphics[width=4cm]{graphs/op2_residue_Flops_Dp.png}
-    \includegraphics[width=4cm]{graphs/op2_residue_L2Cache.png}
-    \includegraphics[width=4cm]{graphs/op2_residue_L3.png}
+    A seguir, seguem os gráficos com as métricas extraídas pelo programa \textbf{LIKWID}, conforme solicitado, para diversos valores de N\@.
+
+    \subsection{Método dos Gradientes Conjugados (CG)}\label{subsec:cg)}
+
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Exec_Time}
+
+    É possível observar a disparidade no tempo de execução entre o programa antigo e o novo.
+    Torna-se evidente que os métodos de otimização utilizados obtiveram sucesso ao reduzir drasticamente o
+    tempo de execução para a iteração do gradiente, especialmente para grandes valores de N,
+    que é o foco principal do nosso interesse.
+
+    Essa redução no tempo é justificada pela melhora nas métricas que analisaremos a seguir.
+
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Avx}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Dp}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L2Cache}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L3}
+
+    \subsection{Cálculo do Resíduo}\label{subsec:residue}
+
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Exec_Time}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Avx}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Dp}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L2Cache}
+    \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L3}
 
     \section{Resultados e Análise de Desempenho}\label{sec:resultados}
 
@@ -117,7 +132,7 @@
 
     \begin{table}[h]
         \centering
-        \caption{Comparação de Tempo de Execução: Original vs. Otimizado (Tempo para N = 20.000 em milisegundos)}
+        \caption{Comparação de Tempo de Execução: Original vs. Otimizado (Tempo para N=20.000 em milisegundos)}
         \begin{tabular}{|c|c|c|c|}
             \hline
             \textbf{Operação} & \textbf{Tempo Original} & \textbf{Tempo Otimizado} & \textbf{Speedup} \\
@@ -134,19 +149,19 @@
 
     \section{Estimativa de Desempenho}\label{sec:Estimativa de Desempenho}
     
-    Baseado nas modificações implementadas na segunda versão e considerando uma máquina com 8GB de memória RAM disponível para seu programa e Sistemas com 7 (sete) diagonais, pode-se responder as perguntas 
+    Baseado nas modificações implementadas na segunda versão e considerando uma máquina com 8GB de memória RAM disponível para seu programa e Sistemas com 7 (sete) diagonais, pode-se responder às perguntas
     dadas no enunciado do trabalho.
 
     \begin{enumerate}
         \item Qual o valor máximo estimado da ordem N do sistema linear que você seria capaz de resolver?
         \vspace{1ex}
 
-        \textit{Após breves discussões, concluímos que conseguiriamos resolver um sistema de ordem 12 aproximadamente, pois apesar de demanadar muito tempo e esforço, parece uma métrica realizável em algumas horas.}
+        \textit{Após breves discussões, concluímos que conseguiriamos resolver até um sistema de ordem 12. Apesar de demanadar muito tempo e esforço, parece uma métrica realizável em algumas horas.}
 
         \item Qual o ganho estimado de tempo para uma iteração do método de Gradiente Conjugado com Pré-condicionador de Jacobi (em função de N)?
 
         \vspace{1ex}
-        \textit{Estimamos que o ganho de desempenho seria algo dentre o intervalo de 8 a 16 vezes mais rápido, pois acreditavamos que isso já seria um ganho notável de desempenho.}
+        \textit{Estimamos que o ganho de desempenho seria algo dentre o intervalo de 8 a 16 vezes mais rápido. Pois, acreditavamos que isso já seria um ganho notável de desempenho.}
 
         \item Qual a estimativa para a quantidade de operações em ponto flutuante executadas em cada iteração do método de Gradiente Conjugado com Pré-condicionador de Jacobi (em função de N)?
         \vspace{1ex}
@@ -158,9 +173,9 @@
         \vspace{1ex}
         \textit{Bom, apenas as perguntas '2.' e '3.' podem ser comparadas, visto que a primeira não trata sobre o programa/otimizações em si.}
         
-        \textit{Sobre o ganho estimado (2.) percebemos que a diferença foi muito maior, chegando a casos da segunda versão apresentar um tempo de execução 2458 vezes menor que a versão 1.}
+        \textit{Sobre o ganho estimado (2.); percebemos que a diferença foi muito maior, chegando a casos da segunda versão apresentar um tempo de execução 2458 vezes menor que a versão 1.}
         
-        \textit{Já sobre a quantidade de operações de ponto flutuante (3.), obtivemos 120 Flops Dp em media nos testes, bem como tivemos um expressivo aumento em Flops AVX.}
+        \textit{Já sobre a quantidade de operações de ponto flutuante (3.); obtivemos 120 Flops Dp em média nos testes, bem como tivemos um expressivo aumento em Flops AVX.}
     \end{enumerate}
 
 
