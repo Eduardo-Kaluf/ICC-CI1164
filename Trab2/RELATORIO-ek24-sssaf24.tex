@@ -111,17 +111,54 @@
     Essa redução no tempo é justificada pela melhora nas métricas que analisaremos a seguir.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Avx}
+    
+    Ao analisarmos os Flops \textbf{AVX} podemos concluir que houve um uso das Extensões Avançadas de Vetor (\textbf{AVX}) em maior escala, coisa que otimiza o programa ao fazer uso de instruções SIMD.
+
+    Certas inconstancias são devido a DETALHAR AQUI
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Dp}
+    
+    Houve também um aumento no número de Flops Double precision por segundo, coisa que impacta diretamente na velocidade do programa, já que se há um maior numero de operações ocorrendo num mesmo intervalo de tempo,
+    quer dizer que a máquina terminará os cálculos antes se comparado à primeira versão.
+    
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L2Cache}
+
+    Analisando o gráfico de miss ratio da cache L2 é possível inferir que: Para sistemas de tamanhos condizentes com a Cache L2 (256-512) temos um desempenho expressivo da versão otimizada. 
+    Todavia quando o tamanho aumenta muito temos uma piora por não ser mais possível aproveitar a localidade na cache, o que chega deixar o miss ratio da versão otimizada levemente pior que da versão original.
+
+    Além disso, o pode-se afirmar que a primeira versão do trabalho tem um desempenho mais consistente, apesar de ruim. Coisa que não se confere na nova versão.
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L3}
+
+    Aqui podemos observar um uso muito melhor da comunicação entre processador e memória devido a largura de banda aumentar notavelmente mais na versão otimizada, o que indica que mais dados são passados por segundo,
+    otimizando o acesso a memória.
+
+    ADD UMA SUBCONCLUSÃO??
 
     \subsection{Cálculo do Resíduo}\label{subsec:residue}
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Exec_Time}
+
+    No gráfico acima percebelos uma melhora relativa entre a primeira versão (não otimizada) e a segunda (otimizada), que se mostra mais significativa em tamanhos maiores, por exemplo para N na casa dos milhares.
+    
+    Tais melhoras podem ser justificadas pelos gráficos a seguir, bem como pelo uso do modelo \textbf{CSR}.
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Avx}
+    
+    No que diz respeito ao uso de Flops \textbf{AVX} no cálculo do resíduo temos que na nova versão não houve o uso da extensão em nenhum momento, coisa que após analisarmos o código do programa e as métricas, consideramos ser devido ao uso do \textbf{CSR}, 
+    que acaba por minar o uso de instruções SIMD ao não ser possível desenrolar o laço e/ou identificar pontos de possível uso.
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Dp}
+
+    Ao contrário do que foi visto no último grafico, podemos perceber aqui uma impressiva melhora, ao passo que realiza muitos mais cálculos em uma mesma quantidade de tempo, acelerando o programa.
+    
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L2Cache}
+
+    Neste ponto é possivel notar que não houve melhora no Miss Ratio da cache L2, até mesmo representando uma pequena piora em parte dos casos.
+    
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L3}
+
+    A L3 bandwitch apresentou uma piora, pois menos dados estão sendo carregados por segundo, mesmo que seja uma pequena diferença em boa parte dos casos. 
 
     \section{Resultados e Análise de Desempenho}\label{sec:resultados}
 
