@@ -128,14 +128,14 @@
     Uma vez que um maior volume de operações ocorre no mesmo intervalo de tempo, isso significa que a máquina concluirá os cálculos mais rapidamente em comparação com a versão anterior.
 
     É importante ressaltar que a taxa de FLOPs por segundo é inversamente proporcional ao tempo de execução do programa.
-    Ou seja, o aumento dessa métrica ocorreu tanto por uma diminuição no tempo total necessário para realizar as operações quanto por um aumento na velocidade geral do processamento.
+    Ou seja, o aumento dessa métrica ocorreu tanto por uma diminuição no tempo total necessário para realizar as operações quanto por uma diminuição no total de operações realizadas.
 
     Esta métrica apresenta os mesmos picos e vales que o gráfico anterior, pois o mesmo problema ocorre.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L2Cache}
 
     Analisando o gráfico de miss ratio da cache L2 é possível inferir que: para sistemas de tamanhos condizentes com a Cache L2 (256-512) temos um desempenho expressivo da versão otimizada.
-    Todavia quando o tamanho aumenta muito temos uma piora por não ser mais possível aproveitar a localidade na cache, o que chega deixar o miss ratio da versão otimizada levemente pior que da versão original.
+    Todavia, quando o tamanho aumenta muito temos uma piora por não ser mais possível aproveitar a localidade na cache, o que chega deixar o miss ratio da versão otimizada levemente pior que da versão original.
 
     Além disso, pode-se afirmar que a primeira versão do trabalho tem um desempenho mais consistente, apesar de ruim.
     Coisa que não se confere na nova versão.
@@ -176,7 +176,7 @@
 
     Neste ponto é possivel notar que não houve melhora no \textit{Miss Ratio} da cache \textbf{L2}, até mesmo representando uma pequena piora em parte dos casos.
 
-    Essa maior \textit{taxa de miss} ocorre, principalmente, pelos acessos indiretos e distantes que o cálculo do resíduo acaba fazendo por conta do CSR\@.
+    Essa maior \textit{taxa de miss} ocorre, principalmente, pelos acessos indiretos e distantes que o cálculo do resíduo acaba fazendo por conta do \textbf{CSR}\@.
 
     \clearpage
 
