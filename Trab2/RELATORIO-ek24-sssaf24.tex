@@ -112,53 +112,88 @@
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Avx}
     
-    Ao analisarmos os Flops \textbf{AVX} podemos concluir que houve um uso das Extensões Avançadas de Vetor (\textbf{AVX}) em maior escala, coisa que otimiza o programa ao fazer uso de instruções SIMD.
+    Ao analisarmos os Flops \textbf{AVX} podemos concluir que houve um uso das Extensões Avançadas de Vetor (\textbf{AVX}) em maior escala,
+    coisa que otimiza o programa ao fazer uso de instruções SIMD\@.
 
-    Certas inconstancias são devido a DETALHAR AQUI
+    A utilização do \textbf{AVX} foi possível pelo método como estamos armazenando a matriz, o \textbf{CSR} permite que diversas operações
+    durante a multiplicação de matriz vetor sejam realizadas ao mesmo tempo, pois são realizadas em sequência, sem dependência de dados e
+    sem nenhum desvio condicional.
+
+    Pode-se inferir que os picos e vales que ocorrem nas potências de 2 no início do gráfico resultam de um mapeamento ineficiente da cache para alguns desses valores específicos.
+    Esse fenômeno é comumente denominado \textbf{\textit{cache thrashing}}.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_Flops_Dp}
     
-    Houve também um aumento no número de Flops Double precision por segundo, coisa que impacta diretamente na velocidade do programa, já que se há um maior numero de operações ocorrendo num mesmo intervalo de tempo,
-    quer dizer que a máquina terminará os cálculos antes se comparado à primeira versão.
-    
+    Houve também um aumento no número de \textbf{FLOPs de precisão dupla (Double precision)} por segundo, o que impacta diretamente na velocidade do programa.
+    Uma vez que um maior volume de operações ocorre no mesmo intervalo de tempo, isso significa que a máquina concluirá os cálculos mais rapidamente em comparação com a versão anterior.
+
+    É importante ressaltar que a taxa de FLOPs por segundo é inversamente proporcional ao tempo de execução do programa.
+    Ou seja, o aumento dessa métrica ocorreu tanto por uma diminuição no tempo total necessário para realizar as operações quanto por um aumento na velocidade geral do processamento.
+
+    Esta métrica apresenta os mesmos picos e vales que o gráfico anterior, pois o mesmo problema ocorre.
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L2Cache}
 
-    Analisando o gráfico de miss ratio da cache L2 é possível inferir que: Para sistemas de tamanhos condizentes com a Cache L2 (256-512) temos um desempenho expressivo da versão otimizada. 
+    Analisando o gráfico de miss ratio da cache L2 é possível inferir que: para sistemas de tamanhos condizentes com a Cache L2 (256-512) temos um desempenho expressivo da versão otimizada.
     Todavia quando o tamanho aumenta muito temos uma piora por não ser mais possível aproveitar a localidade na cache, o que chega deixar o miss ratio da versão otimizada levemente pior que da versão original.
 
-    Além disso, o pode-se afirmar que a primeira versão do trabalho tem um desempenho mais consistente, apesar de ruim. Coisa que não se confere na nova versão.
+    Além disso, pode-se afirmar que a primeira versão do trabalho tem um desempenho mais consistente, apesar de ruim.
+    Coisa que não se confere na nova versão.
+
+    O cache miss ratio é dado pela divisão entre os acessos à cache e a quantidade de erros, sendo assim temos uma métrica em proporção e não em valores absolutos.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op1_gradient_L3}
 
-    Aqui podemos observar um uso muito melhor da comunicação entre processador e memória devido a largura de banda aumentar notavelmente mais na versão otimizada, o que indica que mais dados são passados por segundo,
-    otimizando o acesso a memória.
+    Aqui, podemos observar um uso muito melhor da comunicação entre processador e memória, visto que a largura de banda aumenta notavelmente na versão otimizada.
+    Isso indica que mais dados são transmitidos por segundo, otimizando o acesso à memória.
 
-    ADD UMA SUBCONCLUSÃO??
+    Tal melhoria ocorre porque, com o formato CSR, os dados utilizados ficam contíguos na memória, aumentando a localidade espacial e, consequentemente, a quantidade de dados trafegados
 
     \subsection{Cálculo do Resíduo}\label{subsec:residue}
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Exec_Time}
 
-    No gráfico acima percebelos uma melhora relativa entre a primeira versão (não otimizada) e a segunda (otimizada), que se mostra mais significativa em tamanhos maiores, por exemplo para N na casa dos milhares.
+    No gráfico acima percebemos uma melhora relativa entre a primeira versão (não otimizada) e a segunda (otimizada), que se mostra mais significativa em tamanhos de larga escala.
     
     Tais melhoras podem ser justificadas pelos gráficos a seguir, bem como pelo uso do modelo \textbf{CSR}.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Avx}
     
-    No que diz respeito ao uso de Flops \textbf{AVX} no cálculo do resíduo temos que na nova versão não houve o uso da extensão em nenhum momento, coisa que após analisarmos o código do programa e as métricas, consideramos ser devido ao uso do \textbf{CSR}, 
-    que acaba por minar o uso de instruções SIMD ao não ser possível desenrolar o laço e/ou identificar pontos de possível uso.
+    No que diz respeito ao uso de Flops \textbf{AVX} no cálculo do resíduo temos que na nova versão otimizada não houve o uso da extensão em nenhum momento, coisa que após analisarmos o código do programa e as métricas, consideramos ser devido ao uso do \textbf{CSR},
+    que acaba nos obrigando a fazer o acesso indireto de um vetor, isso impede o \textbf{AVX} de ser executado.
+
+    Ademais, existe dependência de dados na variável \textit{sum}, outro impecilho ao \textbf{AVX}.
 
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_Flops_Dp}
 
     Ao contrário do que foi visto no último grafico, podemos perceber aqui uma impressiva melhora, ao passo que realiza muitos mais cálculos em uma mesma quantidade de tempo, acelerando o programa.
-    
+
+    O funcionamento e a explicação deste gráfico seguem igualmente à do \textbf{CG}.
+
+    \clearpage
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L2Cache}
 
-    Neste ponto é possivel notar que não houve melhora no Miss Ratio da cache L2, até mesmo representando uma pequena piora em parte dos casos.
-    
+    Neste ponto é possivel notar que não houve melhora no \textit{Miss Ratio} da cache \textbf{L2}, até mesmo representando uma pequena piora em parte dos casos.
+
+    Essa maior \textit{taxa de miss} ocorre, principalmente, pelos acessos indiretos e distantes que o cálculo do resíduo acaba fazendo por conta do CSR\@.
+
+    \clearpage
+
     \hspace*{-2.0cm}\includegraphics[width=16cm]{graphs/op2_residue_L3}
 
-    A L3 bandwitch apresentou uma piora, pois menos dados estão sendo carregados por segundo, mesmo que seja uma pequena diferença em boa parte dos casos. 
+    A \textbf{bandwidth} da cache \textbf{L3} apresentou uma piora, pois menos dados estão sendo carregados por segundo, mesmo que a diferença seja, geralmente, pequena.
+    Isso ocorre, de fato, devido à natureza dos acessos indiretos à memória e ao modo de funcionamento do formato \textbf{CSR}.
+    No entanto, como mencionado anteriormente, essa piora é sobreposta pelo ganho nas outras operações e, mais ainda, compensada pelo tempo economizado nas iterações do \textbf{CG}.
+
+    \subsection{Observações}\label{subsec:obs}
+
+    É importante notar que, ainda que alguns gráficos mostrem um resíduo ligeiramente pior, o ganho obtido nas demais métricas de desempenho é mais significativo.
+    Adicionalmente, o principal gargalo do programa encontra-se na iteração do \textbf{CG}.
+
+    Portanto, é altamente vantajoso comprometer uma pequena porção do desempenho no cálculo do resíduo, visando a implementação de uma estrutura que otimize e acelere a iteração do gradiente.
+
+    \clearpage
 
     \section{Resultados e Análise de Desempenho}\label{sec:resultados}
 
@@ -182,7 +217,9 @@
     \end{table}
 
     Vale ressaltar que no teste de N = 20.000 do 1º trabalho, o \textbf{LIKWID} não gerou nenhum dado correspondente a execução, portanto apenas a medida de tempo deve ser considerada, já que todas as outras 
-    são iguais a zero. 
+    são iguais a zero.
+
+    \clearpage
 
     \section{Estimativa de Desempenho}\label{sec:Estimativa de Desempenho}
     
@@ -226,8 +263,10 @@
     \textbf{diminuímos drasticamente} o tempo de execução total do algoritmo, tornando o Método dos Gradientes Conjugados
     mais eficiente para a resolução de sistemas lineares de grande escala.
 
-     \nocite{*}
-     \bibliography{references}
-     \bibliographystyle{plain}
+    \clearpage
+
+    \nocite{*}
+    \bibliography{references}
+    \bibliographystyle{plain}
 
 \end{document}
